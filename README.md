@@ -5,8 +5,8 @@ Primary tasks (required):
 - plan and make robot follow Cartesian trajectories
 - read, write and visualise joint angles
 - read, compute, write and plot Cartesian positions (FK) and Euler angles of robot links
-- read, write and compute Jacobian matrices (week)
-- be able to move the robot with some controls
+- read, write and compute Jacobian matrices (taught fi week 8)
+- be able to move the robot with controllers/keyboard or other interesting stuff
 
 Report (5-10 pages):
 
@@ -14,3 +14,15 @@ Report (5-10 pages):
 - what and how was theoretical material used for developing our simulation
 - what's good bout our simulation and any real applications
 - data, graphs, numbers, results etc about or simulations
+
+Our tasks and project outline:
+
+- streamlining ROS and version control to work on the software
+- research... lots of it, including but not limited to
+  - python programming w/ numpy, ROS 2 and OOP
+  - FK and IK libraries compatible with python
+  - tools to easily for plotting and visualising stuff
+  - computer vision for our game application (openCV, aruco markers)
+- develop generic classes that fulfil the required tasks **(highest priority)**
+- develop on our game solution
+- plan and develop our integration with the real kinova gen3 lite
