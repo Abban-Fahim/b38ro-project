@@ -1,3 +1,5 @@
+# Planning
+
 Primary tasks (required):
 
 - inverse kinematics (move end effector to a desired Cartesian pose)
@@ -26,3 +28,28 @@ Our tasks and project outline:
 - develop generic classes that fulfil the required tasks **(highest priority)**
 - develop on our game solution
 - plan and develop our integration with the real kinova gen3 lite
+
+# Instructions
+
+To run the example coppelia simulation, in the first terminal source, source ROS
+
+```bash
+source /opt/ros/humble/setup.bash
+```
+
+and then open the coppeliaSim file: `coppelia/exampleSubPub.ttt`
+
+In a second terminal, `cd` into `b38ro_ws`, and build + source the workspace with
+
+```bash
+colcon build
+source install/setup.bash
+```
+
+Then run the example ROS node with
+
+```bash
+ros2 run joints talker
+```
+
+Now starting the simulation should show start logging whatever the node publishes.
