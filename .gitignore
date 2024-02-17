@@ -1,6 +1,15 @@
+.vscode/
+
+# For tex related files
 *.log
 *.aux
 *.synctex.gz
 *.fls
 *.fdb_latexmk
 *.toc
+
+# For ROS related files
+devel/
+build/
+install/
+log/
