@@ -53,3 +53,4 @@ ros2 run joints talker
 ```
 
 Now starting the simulation should show start logging whatever the node publishes.
+:)
