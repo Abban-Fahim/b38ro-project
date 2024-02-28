@@ -53,10 +53,21 @@ ros2 run joints talker
 ```
 
 Now starting the simulation should show start logging whatever the node publishes.
-:)
+
+As UInt16MultiArray and Int16MultiArray do not come with the standard ROS std_msgs library for coppelia, we must add it and recompile the build.
+
+Go to the directory where Coppelia has been installed and edit the interfaces.txt file.
+The path to that is '(coppeliasim dir)/programming/ros2_packages/sim_ros2_interface/meta/interfaces.txt'.
+
+Add the following in the file one after the other: 
+std_msgs/msg/UInt16MultiArray
+std_msgs/msg/Int16MultiArray
+std_msgs/msg/MultiArrayLayout
+std_msgs/msg/MultiArrayDimension
+
+Change directory to sim_ros2_interface and run 'colcon build'. It should take 5 mins and then you're good to go :)
 
 ## Notes
-
 Video feed through fone (termux/web)
 
 
