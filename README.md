@@ -62,7 +62,7 @@ As `UInt16MultiArray` and `Int16MultiArray` do not come with the standard `ROS2 
 We need to add it and recompile the build.
 <br><br>
 Go to the directory where Coppelia has been installed and edit the `interfaces.txt` file.
-<br><br>
+<br>
 
 The path to that is: 
 ```bash 
