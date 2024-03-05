@@ -1,14 +1,27 @@
-#def x_pos(camfot):
+import rclpy
+from std_msgs.msg import Int16MultiArray
+
+
+def x_pos(n):
 	#if time to code a alg/ai to find a x to pickup pos ,otherwise just have in a const location to pickup from with constant cords/jointangs
-#	return cord 
+	
+	return cord 
 
 		
-def mov_tocord(n):
+def mov_tocord(n,cma):
 	#code to give cordinates for moving to 
 	#can be either sensor based 
 	#or fixed (read readme in  ROSMAIN)
-#	return cord
-
+	ctc = x_pos(n)
+	invK(ctc,cma)
+#	return angs
+def invK(ctc,cma):
+	#code for inv kinematics given 	
+	
+	
+	
+	
+	
 #def ori(camfot):
 	#code to orient the grabber before picking up 
 	#can be sensor based or physical input based (Readme in ROSMAIN)
@@ -19,6 +32,7 @@ def mov_tocord(n):
 
 def pic_x(cord):
 	#code to move  to and pickup 
+	
 
 def picplace(camfot,movtodo):
 	#either 
