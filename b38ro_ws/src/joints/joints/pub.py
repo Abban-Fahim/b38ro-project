@@ -21,7 +21,7 @@ class MinimalPublisher(Node):
         pkg_dir = get_package_prefix("joints")
         print(pkg_dir)
         self.robot = ikpy.chain.Chain.from_urdf_file(
-            pkg_dir + "/../../../kortex_description/gen3_lite/urdf/GEN3-LITE.urdf",
+            pkg_dir + "/../../../coppelia/GEN3-LITE.urdf",
             ["BASE"],
             active_links_mask=[True, True, True, True, True, True, True, False],
         )

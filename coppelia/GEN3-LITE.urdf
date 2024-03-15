@@ -8,13 +8,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/BASE.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/BASE.STL" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/BASE.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/BASE.STL" />
       </geometry>
     </collision>
   </link>
@@ -27,13 +27,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/SHOULDER.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/SHOULDER.STL" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/SHOULDER.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/SHOULDER.STL" />
       </geometry>
     </collision>
   </link>
@@ -56,13 +56,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/ARM.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/ARM.STL" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/ARM.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/ARM.STL" />
       </geometry>
     </collision>
   </link>
@@ -85,13 +85,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/FOREARM.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/FOREARM.STL" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/FOREARM.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/FOREARM.STL" />
       </geometry>
     </collision>
   </link>
@@ -114,13 +114,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/LOWER_WRIST.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/LOWER_WRIST.STL" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/LOWER_WRIST.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/LOWER_WRIST.STL" />
       </geometry>
     </collision>
   </link>
@@ -143,13 +143,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/UPPER_WRIST.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/UPPER_WRIST.STL" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://kortex_description/gen3_lite/meshes/UPPER_WRIST.STL" />
+        <mesh filename="/home/abban/b38ro-project/kortex_description/gen3_lite/UPPER_WRIST.STL" />
       </geometry>
     </collision>
   </link>
