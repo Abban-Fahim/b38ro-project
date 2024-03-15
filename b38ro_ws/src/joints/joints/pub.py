@@ -1,29 +1,41 @@
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import String
+from std_msgs.msg import String, Float32MultiArray
+from ament_index_python import get_package_prefix
+
+import ikpy.chain
 
 
 class MinimalPublisher(Node):
 
     def __init__(self):
-        super().__init__('minimal_publisher')
-        self.publisher_ = self.create_publisher(String, 'topic', 10)
-        self.sub = self.create_subscriber
-        timer_period = 0.5  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.i = 0
+        super().__init__("joints")
+        self.target_angles = self.create_publisher(
+            Float32MultiArray, "target_angles", 10
+        )
+        self.create_subscription(
+            Float32MultiArray, "web_angles", self.move_to_angles, 10
+        )
 
-    def timer_callback(self):
-        msg = String()
-        msg.data = 'Hello World: %d' % self.i
-        self.publisher_.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
-        self.i += 1
+        pkg_dir = get_package_prefix("joints")
+        print(pkg_dir)
+        self.robot = ikpy.chain.Chain.from_urdf_file(
+            pkg_dir + "/../../../kortex_description/gen3_lite/urdf/GEN3-LITE.urdf",
+            ["BASE"],
+            active_links_mask=[True, True, True, True, True, True, True, False],
+        )
+
+    def move_to_angles(self, msg: Float32MultiArray):
+        angles = self.robot.inverse_kinematics(msg.data)
+        msg = Float32MultiArray()
+        msg.data = angles[1:7].tolist()
+        print(angles)
+        self.target_angles.publish(msg)
 
 
-def main(args=None):
-    rclpy.init(args=args)
+def main():
+    rclpy.init()
 
     minimal_publisher = MinimalPublisher()
 
@@ -36,5 +48,5 @@ def main(args=None):
     rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
