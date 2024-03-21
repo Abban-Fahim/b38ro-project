@@ -30,6 +30,8 @@ class MinimalPublisher(Node):
 
         # Get the package directory path
         pkg_dir = get_package_prefix("joints")
+
+        print(pkg_dir)
         
         # Load robot chain from URDF file
         self.robot = ikpy.chain.Chain.from_urdf_file(
@@ -49,6 +51,8 @@ class MinimalPublisher(Node):
         # Set the data field of the message to the calculated joint angles
         msg.data = angles[1:7].tolist()
         
+        print(angles)
+
         # Publish the calculated joint angles
         self.target_angles.publish(msg)
 
