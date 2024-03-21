@@ -3,7 +3,7 @@
  */
 const ros = new ROSLIB.Ros();
 
-ros.connect("ws://10.6.156.130:9090");
+ros.connect("ws://localhost:9090");
 
 const cartesian_pos = new ROSLIB.Topic({
     ros, name: "/cart_pose", messageType: "std_msgs/Float32MultiArray"

@@ -56,7 +56,13 @@ Now starting the simulation should show start logging whatever the node publishe
 
 ## Run the web-based GUI
 
-Install the package `ros-humble-rosbridge-suite` and start the rosbridge websocket server.
+Install the package `ros-humble-rosbridge-suite` and start the rosbridge websocket server using
+
+```bash
+ros2 launch rosbridge_server rosbridge_websocket_launch.xml
+```
+
+Then open up UI by opening the file `gui/index.html` in the browser.
 
 ## Adding custom messages to Coppeliasim's ROS interface
 
@@ -80,11 +86,26 @@ colcon build
 
 It should about take 5 mins to complete the build and then you're good to go :)
 
-## Notes
+# Notes
 
-Video feed through fone (termux/web)
+## Progress on physical robot
 
-## NUFTFY
+ - Video feed through fone (termux/web)
+ - To start the moveit commander, run `ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_ip:=yyy.yyy.yy.yy use_fake_hardware:=True`
+ - To send joint commands, run 
+ 
+```bash
+ros2 topic pub /joint_trajectory_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{  joint_names: [joint_1, joint_2, joint_3, joint_4, joint_5, joint_6],
+  points: [
+    { positions: [2, 2, 2, 2, 2, 2], time_from_start: { sec: 10 } },
+  ]
+}" -1
+```
 
-- how to pick
+## Ongoing tasks
+
+ - how to pick
+ - Calculate Jacobian
+   - Through coppelia, but not ideal
+   - Migrate to a different library which solves it for us (pykin)[https://github.com/jdj2261/pykin] or (kinpy)[https://github.com/neka-nat/kinpy]
 
