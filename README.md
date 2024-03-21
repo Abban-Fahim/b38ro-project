@@ -54,38 +54,37 @@ ros2 run joints talker
 
 Now starting the simulation should show start logging whatever the node publishes.
 
+## Run the web-based GUI
 
-# Before Getting Started
+Install the package `ros-humble-rosbridge-suite` and start the rosbridge websocket server.
 
-As `UInt16MultiArray` and `Int16MultiArray` do not come with the standard `ROS2 std_msgs` library for coppelia.
-<br><br>
-We need to add it and recompile the build.
-<br><br>
-Go to the directory where Coppelia has been installed and edit the `interfaces.txt` file.
-<br>
+## Adding custom messages to Coppeliasim's ROS interface
 
-The path to that is: 
-```bash 
-(coppeliasim dir)/programming/ros2_packages/sim_ros2_interface/meta/interfaces.txt
-```
+As `Float32MultiArray` does not come with the included messages for coppelia. We need to add it and recompile the build.
+
+Clone the repository for (simROS)[https://github.com/CoppeliaRobotics/simROS2/] and add the line `export COPPELIASIM_ROOT_DIR=(coppelia directory)` to your `~/.bashrc`.
 
 Add the following in the `interfaces.txt`: 
 
 ```bash
-std_msgs/msg/UInt16MultiArray
-std_msgs/msg/Int16MultiArray
+std_msgs/msg/Float32MultiArray
 std_msgs/msg/MultiArrayLayout
 std_msgs/msg/MultiArrayDimension
 ```
 
-Change directory to `sim_ros2_interface` and run 
+Change the cloned directory's name to `sim_ros2_interface` and run 
+
 ```bash
 colcon build
 ```
-It should take 5 mins to complete the build and then you're good to go :)
+
+It should about take 5 mins to complete the build and then you're good to go :)
 
 ## Notes
+
 Video feed through fone (termux/web)
 
+## NUFTFY
 
+- how to pick
 

@@ -25,7 +25,7 @@ class MinimalPublisher(Node):
         
         # Create a subscription to receive web angles
         self.create_subscription(
-            Float32MultiArray, "web_angles", self.move_to_angles, 10
+            Float32MultiArray, "cart_pose", self.move_to_angles, 10
         )
 
         # Get the package directory path
