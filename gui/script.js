@@ -1,6 +1,3 @@
-/**
- * @
- */
 const ros = new ROSLIB.Ros();
 
 ros.connect("ws://localhost:9090");
@@ -17,15 +14,16 @@ const canvas = document.querySelector("canvas");
 const video = document.querySelector("video");
 
 function takePic() {
-    navigator.mediaDevices.getUserMedia({video: true, audio: false}).then((stream)=>{
-        video.srcObject = stream;
-        canvas.getContext("2d").drawImage(video, 0, 0);
-        const data = canvas.toDataURL("image/jpeg");
-        imgTopic.publish({format: "jpeg", data: data.replace("data:image/jpeg;base64,", "")})
-    });
+    canvas.getContext("2d").drawImage(video, 0, 0);
+    const data = canvas.toDataURL("image/jpeg");
+    imgTopic.publish({format: "jpeg", data: data.replace("data:image/jpeg;base64,", "")})
 }
 
 document.getElementById("start-vid").onclick = ()=>{
+    navigator.mediaDevices.getUserMedia({video: true, audio: false}).then((stream)=>{
+        video.srcObject = stream;
+        video.play();
+    });
     console.log("started video");
     setInterval(takePic, 100);
 };

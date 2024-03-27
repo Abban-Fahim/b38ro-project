@@ -7,6 +7,10 @@
 *.fls
 *.fdb_latexmk
 *.toc
+*.bbl
+*.bcf
+*.blg
+*.run.xml
 
 # For ROS related files
 devel/

@@ -31,17 +31,17 @@ function angle_cb(msg)
     local maxVel={vel*math.pi/180,vel*math.pi/180,vel*math.pi/180,vel*math.pi/180,vel*math.pi/180,vel*math.pi/180}
     local maxAccel={accel*math.pi/180,accel*math.pi/180,accel*math.pi/180,accel*math.pi/180,accel*math.pi/180,accel*math.pi/180}
     local maxJerk={jerk*math.pi/180,jerk*math.pi/180,jerk*math.pi/180,jerk*math.pi/180,jerk*math.pi/180,jerk*math.pi/180}
-
-    lol(jointHandles,maxVel,maxAccel,maxJerk,msg.data)
+    print(msg)
+    lol(jointHandles,maxVel,maxAccel,maxJerk,msg.points[1].positions)
     
-    print(msg.data)
+    -- print(msg.data)
 end
 
 function sysCall_init()
     sim = require('sim')
     ros = require('simROS2')
     
-    anglesSub = ros.createSubscription('/target_angles', 'std_msgs/msg/Float32MultiArray', 'angle_cb')
+    anglesSub = ros.createSubscription('/joint_trajectory_controller/joint_trajectory', 'trajectory_msgs/msg/JointTrajectory', 'angle_cb')
 
     -- do some initialization here
 end

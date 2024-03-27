@@ -91,7 +91,7 @@ It should about take 5 mins to complete the build and then you're good to go :)
 ## Progress on physical robot
 
  - Video feed through fone (termux/web)
- - To start the moveit commander, run `ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_ip:=yyy.yyy.yy.yy use_fake_hardware:=True`
+ - To start the moveit commander, run `ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_type:=gen3_lite gripper:=gen3_lite_2f robot_ip:=yyy.yyy.yy.yy use_fake_hardware:=True`
  - To send joint commands, run 
  
 ```bash
