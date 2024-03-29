@@ -1,8 +1,16 @@
 -- lua
 
+function gripper_cb(msg)
+    print(msg.data) -- Got gripper command for which to move to
+    sim.setJointTargetPosition(jointR1, 0.8 - msg.data)
+    sim.setJointTargetPosition(jointL1, -(0.8 - msg.data))
+end
+
 function sysCall_init()
     sim = require('sim')
     ros = require('simROS2')
+
+    ros.createSubscription("/gripper_pose", "std_msgs/msg/Float32", "gripper_cb")
 
     jointR1 = sim.getObject("./RIGHT_BOTTOM")
     jointR2 = sim.getObject("./RIGHT_TIP")

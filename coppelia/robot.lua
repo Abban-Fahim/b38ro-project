@@ -41,7 +41,7 @@ function sysCall_init()
     sim = require('sim')
     ros = require('simROS2')
     
-    anglesSub = ros.createSubscription('/joint_trajectory_controller/joint_trajectory', 'trajectory_msgs/msg/JointTrajectory', 'angle_cb')
+    ros.createSubscription('/joint_trajectory_controller/joint_trajectory', 'trajectory_msgs/msg/JointTrajectory', 'angle_cb')
 
     -- do some initialization here
 end

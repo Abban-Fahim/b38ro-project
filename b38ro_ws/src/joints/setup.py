@@ -18,6 +18,9 @@ setup(
     license="TODO: License declaration",
     tests_require=["pytest"],
     entry_points={
-        "console_scripts": ["talker=joints.pub:main", "camTest=joints.cam:main"],
+        "console_scripts": [
+            "talker=joints.pub:main",
+            "controller=joints.controller:main",
+        ],
     },
 )
