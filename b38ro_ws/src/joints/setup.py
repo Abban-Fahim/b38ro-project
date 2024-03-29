@@ -19,8 +19,9 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "talker=joints.pub:main",
+            "talker=joints.pub2:main",
             "controller=joints.controller:main",
+            "pykinpub=joints.pykinpub:main",
         ],
     },
 )

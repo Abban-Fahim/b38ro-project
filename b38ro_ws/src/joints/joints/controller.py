@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float32
 
 
@@ -11,7 +11,7 @@ class Controller(Node):
 
         self.create_subscription(Joy, "/joy", self.controller_cb, 10)
         self.twist_topic = self.create_publisher(
-            Twist, "/twist_controller/commands", 10
+            TwistStamped, "/twist_controller/commands", 10
         )
 
         self.gripper_topic = self.create_publisher(Float32, "gripper_pose", 10)
@@ -26,7 +26,7 @@ class Controller(Node):
             val.data = 0.8
             self.gripper_topic.publish(val)
 
-        twist = Twist()
+        twist = TwistStamped()
         twist.linear.x = msg.axes[0]
         twist.linear.y = msg.axes[1]
         twist.linear.z = msg.axes[2]
