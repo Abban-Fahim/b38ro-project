@@ -47,14 +47,13 @@ class RobotCommander(Node):
     def move_to_angles(self, msg: Pose):
         # Calculate inverse kinematics for the recived cartesian positions
         angles = self.robot.inverse_kinematics(
-            [msg.position.z, msg.position.y, msg.position.z]
+            [msg.position.x, msg.position.y, msg.position.z]
         )
 
         # Create a new message for publishing
         traj = JointTrajectory()
         traj.joint_names = jointNames
         point = JointTrajectoryPoint()
-        point.positions = angles[1:7].tolist()
         point.positions = angles[1:7].tolist()
         point.time_from_start = Duration(seconds=10).to_msg()
         traj.points.append(point)

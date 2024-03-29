@@ -42,12 +42,18 @@ function sysCall_init()
     ros = require('simROS2')
     
     ros.createSubscription('/joint_trajectory_controller/joint_trajectory', 'trajectory_msgs/msg/JointTrajectory', 'angle_cb')
-
+    
+    statePub = ros.createPublisher('/robot_state', 'std_msgs/msg/Float32MultiArray')
+    
     -- do some initialization here
 end
 
 function sysCall_actuation()
-    -- put your actuation code here
+    local jointAngles = {}
+    for i=1,6,1 do
+        jointAngles[i]=sim.getJointPosition(sim.getObject('./J'..(i-1)))
+    end
+    ros.publish(statePub, {data=jointAngles})
 end
 
 function sysCall_sensing()
