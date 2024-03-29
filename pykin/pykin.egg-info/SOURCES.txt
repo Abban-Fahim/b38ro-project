@@ -1,0 +1,9 @@
+LICENSE
+README.md
+setup.py
+pykin.egg-info/PKG-INFO
+pykin.egg-info/SOURCES.txt
+pykin.egg-info/dependency_links.txt
+pykin.egg-info/eager_resources.txt
+pykin.egg-info/requires.txt
+pykin.egg-info/top_level.txt
