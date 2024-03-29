@@ -1,8 +1,0 @@
-Pillow
-matplotlib
-numpy
-pyglet
-python-fcl
-pyyaml
-tqdm
-trimesh[easy]
