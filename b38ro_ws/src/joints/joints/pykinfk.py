@@ -16,7 +16,7 @@ robot = SingleArm(file_path, Transform(rot=[0.0, 0.0, 0.0], pos=[0, 0, 0]))
 robot.setup_link_name("BASE", "END_EFFECTOR")
 
 # Define the target joint angles for forward kinematics
-target_thetas = [-0.470, -1.735, 2.480, -2.275, -1.590, -1.991]
+target_thetas = [-0.0, 0, 0, -0, -0, -1]
 
 # Set the robot's configuration to the target joint angles
 robot.set_transform(target_thetas)

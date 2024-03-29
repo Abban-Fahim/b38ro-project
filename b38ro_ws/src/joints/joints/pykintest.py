@@ -1,5 +1,5 @@
 # Test for Pykin
-
+import pykin
 def get_robot(name):
     # Construct the file path to the URDF file based on the robot name
     file_path = '../assets/urdf/' + name + '/' + name + '.urdf'
