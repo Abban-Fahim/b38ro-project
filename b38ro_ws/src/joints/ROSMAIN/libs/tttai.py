@@ -1,3 +1,6 @@
+
+#functions
+
 def tttai(board):
 
     def minimax(board, depth, is_maximizing):

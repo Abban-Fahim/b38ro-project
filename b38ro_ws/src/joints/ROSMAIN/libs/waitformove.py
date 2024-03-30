@@ -1,13 +1,13 @@
-import rclpy
-from std_msgs.msg import Int16MultiArray
+#imports 
 
-def def_pos():
-	#code to move to a default position for waiting for next move
-	n = Int16MultiArray()
-	n.data=[0,0,0,0,0,0}
-	return n
+
+
+#functions
+
+
+def wait():
+	# waits for player to make a move ,for now done via waiting for input
+	e = input("Waiting ,press space once move made")
 	
-def det_move(camfot):
-	#code to either ;
-	# analise camera footage for when a move is done ,and when its done 
-	# or just by physical command (Read Readme in ROSMAIN)
+	
+

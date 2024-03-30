@@ -1,6 +1,8 @@
-import rclpy
-from std_msgs.msg import Int16MultiArray
+#imports 
 
+
+
+#functions
 
 def x_pos(n):
 	#if time to code a alg/ai to find a x to pickup pos ,otherwise just have in a const location to pickup from with constant cords/jointangs
