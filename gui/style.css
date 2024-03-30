@@ -1,0 +1,64 @@
+:root {
+    --base00: #2E3440;
+    --base01: #3B4252;
+    --base02: #434C5E;
+    --base03: #4C566A;
+    --base04: #D8DEE9;
+    --base05: #E5E9F0;
+    --base06: #ECEFF4;
+    --base07: #8FBCBB;
+    --base08: #BF616A;
+    --base09: #D08770;
+    --base0A: #EBCB8B;
+    --base0B: #A3BE8C;
+    --base0C: #88C0D0;
+    --base0D: #81A1C1;
+    --base0E: #B48EAD;
+    --base0F: #5E81AC;
+}
+
+body {
+    background-color: var(--base00);
+    color: var(--base07);
+    font-family: 'Ubuntu Mono';
+}
+
+button {
+    background: var(--base0F);
+    border-radius: 1px;
+    padding: 12px;
+    border: none;
+    color: inherit;
+    font: inherit;
+}
+
+#pos_control {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+}
+
+label {
+    font-style: italic;
+    padding: 6px;
+}
+
+input[type=range]{
+    background: transparent;
+    padding: 0 16px;
+}
+input[type=range]::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 1px;
+    background: var(--base07);
+    cursor: pointer;
+}
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 8.4px;
+    cursor: pointer;
+    background: var(--base0F);
+    border-radius: 1px;
+    border: none;
+}
