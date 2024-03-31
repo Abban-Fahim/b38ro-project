@@ -15,11 +15,65 @@ const cartesian_pos = new ROSLIB.Topic({
 const joint_angles = new ROSLIB.Topic({
     ros, name: "/robot_state", messageType: "std_msgs/Float32MultiArray"
 });
+const robot_position = new ROSLIB.Topic({
+    ros, name: "/robot_position", messageType: "geometry_msgs/Pose"
+});
 
-let global_joint_angles = 0;
+let global_joint_angles = [];
 joint_angles.subscribe((msg)=>{
    global_joint_angles = msg.data;
 });
+
+let global_end_effector_transform = {pos: {}, angles: {}};
+robot_position.subscribe((msg)=>{
+    global_end_effector_transform.pos = msg.position;
+    ({x, y, z, w} = msg.orientation);
+    // let phi = Math.atan2(2*(x*w + y*z), 1 - 2*(x^2 + y^2))
+    // let theta = Math.atan2(2*(x*w + y*z), 1 - 2*(x^2 + y^2))
+    // let psi = Math.atan2(2*(x*w + y*z), 1 - 2*(x^2+y^2))
+    
+    // Algorithm for calculating extrinsic XYZ Euler angles
+    
+    const i = 0, j = 1, k = 2;
+    const sign = Math.floor((i-j)*(j-k)*(k-i)/2);
+    
+    const a = w - y, b = x + z * sign, c = y + w, d = z*sign - x;
+    const n2 = a^2 + b^2 + c^2 + d^2;
+
+    let theta1, theta3;
+    let theta2 = Math.acos(2*(a^2 + b^2) / (n2 - 1))
+    console.log(theta2)
+    
+    const eps = 0.00000001;
+    const safe1 = Math.abs(theta2) >= eps;
+    const safe2 = Math.abs(theta2 - Math.PI) >= eps;
+    const safe = safe1 && safe2;
+
+    if (safe) {
+        const half_sum = Math.atan2(b, a);
+        const half_diff = Math.atan2(-d, c);
+
+        theta1 = half_sum + half_diff;
+        theta3 = half_sum - half_diff;
+
+    } else {
+        theta3 = 0;
+        
+        if (!safe1) {
+            const half_sum = Math.atan2(b, a);
+            theta1 = 2*half_sum;
+        } 
+        if (!safe2) {
+            const half_diff = Math.atan2(-d, c);
+            theta1 = 2*half_diff;
+        }
+    }
+
+    theta3 *= sign;
+    theta2 -= Math.PI / 2;
+
+    // console.log(theta1, theta2, theta3);
+})
 
 pos_x = document.getElementById("pos_x");
 pos_y = document.getElementById("pos_y");

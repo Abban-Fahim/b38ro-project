@@ -27,18 +27,17 @@ class MinimalPublisher(Node):
         self.target_angles = self.create_publisher(
             JointTrajectory, "joint_trajectory_controller/joint_trajectory", 10
         )
+        self.robot_position = self.create_publisher(Pose, "robot_position", 10)
 
-        # Create a subscription to receive Cartesian poses
+        # receive Cartesian poses to move to
         self.create_subscription(Pose, "cart_pose", self.move_to_angles, 10)
 
         self.create_subscription(
             Float32MultiArray, "robot_state", self.set_robot_state, 10
         )
 
-        # Define the file path to the URDF file
+        # Load robot from URDF file
         file_path = "../assets/urdf/KR7108-URDF/KR7108-URDF.urdf"
-
-        # Load the robot model from the URDF file
         self.robot = SingleArm(file_path, Transform(rot=[0.0, 0.0, 0.0], pos=[0, 0, 0]))
         self.robot.setup_link_name("BASE", "DUMMY")
 
@@ -46,16 +45,19 @@ class MinimalPublisher(Node):
 
     def set_robot_state(self, msg):
         self.robot_state = msg.data
+        fk = self.robot.forward_kin(self.robot_state)["END_EFFECTOR"]
+        pos = Pose()
+        pos.position.x, pos.position.y, pos.position.z = fk.pos
+        (
+            pos.orientation.x,
+            pos.orientation.y,
+            pos.orientation.z,
+            pos.orientation.w,
+        ) = fk.rot
+        self.robot_position.publish(pos)
 
     # Method to calculate joint angles and publish target angles
     def move_to_angles(self, msg: Pose):
-
-        # Initial joint angles
-
-        # NOTE
-        # Change the line of code above to a correct one.
-        # init_thetas = [0, 0, 0, 0, 0, 0]
-        # I have a feeling it's wrong.
 
         # Calculate forward kinematics to get the initial end-effector pose
         self.robot.forward_kin(self.robot_state)
