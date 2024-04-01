@@ -21,7 +21,6 @@ function sysCall_init()
     open_angles = {50, 12, -50, 12}
     close_angles = {0, 0, 0, 0}
 
-    -- do some initialization here
 end
 
 function sysCall_actuation()
@@ -35,5 +34,3 @@ end
 function sysCall_cleanup()
     -- do some clean-up here
 end
-
--- See the user manual or the available code snippets for additional callback functions and details
