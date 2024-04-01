@@ -1,7 +1,7 @@
 
 #functions
 
-def tttai(board):
+def dec(board):
 
     def minimax(board, depth, is_maximizing):
         if win(1, board):
