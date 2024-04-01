@@ -55,7 +55,7 @@ function sysCall_actuation()
     for i=2,6,1 do
         jointAngles[i+1]=sim.getJointPosition(sim.getObject('./J'..(i-1)))
     end
-    print(jointAngles)
+    -- print(jointAngles)
     ros.publish(statePub, {position=jointAngles})
 end
 
