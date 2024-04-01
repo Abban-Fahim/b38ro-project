@@ -31,4 +31,13 @@ def Intersect(eq1,eq2):
 def PointbelowLine(eq1,p1,d):
     return [(p1[0]-eq1[1]/m.sqrt(eq1[0]**2+(eq1[1]**2)*d)),(p1[1]+eq1[0]/m.sqrt(eq1[0]**2+(eq1[1]**2)*d))]
     
+    
+    
+# derrived method :
+# need to make 8 lines ,line joining the two points ,4 parralell and 3 perpendicular 
+# the 4 parralell lines ,two to the left and 2 right .
+# factor of 1/2 and 1/4 of distance bitween the two points left/right
+# the 3 perpendicular lines ,one on each of the known points
+# and one on the midpoint bitween them 
 
+#check desmos graph for more detail https://www.desmos.com/calculator/lmcito3cnm
