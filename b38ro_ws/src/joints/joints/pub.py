@@ -62,6 +62,7 @@ class RobotCommander(Node):
         self.target_angles.publish(traj)
 
     def move_gripper(self, msg: Float32):
+        print("Recived gripper goal", msg.data)
         gripper_msg = GripperCommand.Goal()
         gripper_msg.command.position = msg.data
         gripper_msg.command.max_effort = 100.0

@@ -13,7 +13,7 @@ const cartesian_pos = new ROSLIB.Topic({
     ros, name: "/cart_pose", messageType: "geometry_msgs/Pose"
 });
 const joint_angles = new ROSLIB.Topic({
-    ros, name: "/robot_state", messageType: "std_msgs/Float32MultiArray"
+    ros, name: "/joint_states", messageType: "sensor_msgs/JointState"
 });
 const robot_position = new ROSLIB.Topic({
     ros, name: "/robot_position", messageType: "geometry_msgs/Pose"
@@ -21,7 +21,10 @@ const robot_position = new ROSLIB.Topic({
 
 let global_joint_angles = [];
 joint_angles.subscribe((msg)=>{
-   global_joint_angles = msg.data;
+   global_joint_angles[0] = msg.position[0];
+   for (let i = 2; i < 7; i++) {
+    global_joint_angles[i-1] = msg.position[i];
+   }
 });
 
 let global_end_effector_transform = {pos: {}, angles: {}};

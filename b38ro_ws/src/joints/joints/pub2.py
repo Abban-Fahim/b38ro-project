@@ -1,40 +1,47 @@
-# Import necessary libraries for ROS 2
-import rclpy  # Import the ROS 2 Python library
-from rclpy.node import Node  # Import the Node class for creating ROS nodes
-from std_msgs.msg import (
-    String,
-    Float32MultiArray,
-)  # Import message types for communication
-from pykin.robots.single_arm import SingleArm  # Import SingleArm robot class from Pykin
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import Float32
+from rclpy.action import ActionClient
+from control_msgs.action import GripperCommand
+from pykin.robots.single_arm import SingleArm
 from pykin.kinematics.transform import (
     Transform,
-)  # Import Transform class from Pykin for defining transformations
+)
 from geometry_msgs.msg import Pose
+from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from rclpy.time import Duration
+
+# import numpy as np
+import scipy.spatial.transform as sp
 
 jointNames = ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"]
 
 
-# Define a class for our ROS node
 class MinimalPublisher(Node):
 
-    # Constructor method
     def __init__(self):
-        super().__init__("joints")  # Initialize the node with name "joints"
+        super().__init__("joints")
 
         # Create a publisher for target joint angles
         self.target_angles = self.create_publisher(
             JointTrajectory, "joint_trajectory_controller/joint_trajectory", 10
         )
+
+        # Publisher for FK computation
         self.robot_position = self.create_publisher(Pose, "robot_position", 10)
+
+        # Action client for moving the gripper
+        self.gripper_client = ActionClient(
+            self, GripperCommand, "robotiq_gripper_controller/gripper_cmd"
+        )
 
         # receive Cartesian poses to move to
         self.create_subscription(Pose, "cart_pose", self.move_to_angles, 10)
+        self.create_subscription(Float32, "gripper_pose", self.move_gripper, 10)
 
-        self.create_subscription(
-            Float32MultiArray, "robot_state", self.set_robot_state, 10
-        )
+        # recieve robot's current joint angles
+        self.create_subscription(JointState, "joint_states", self.set_robot_state, 10)
 
         # Load robot from URDF file
         file_path = "../assets/urdf/KR7108-URDF/KR7108-URDF.urdf"
@@ -43,8 +50,10 @@ class MinimalPublisher(Node):
 
         self.robot_state = [0, 0, 0, 0, 0, 0]
 
-    def set_robot_state(self, msg):
-        self.robot_state = msg.data
+    def set_robot_state(self, msg: JointState):
+        self.robot_state = msg.position
+        print(len(self.robot_state))
+        self.robot_state.pop(1)
         fk = self.robot.forward_kin(self.robot_state)["END_EFFECTOR"]
         pos = Pose()
         pos.position.x, pos.position.y, pos.position.z = fk.pos
@@ -54,6 +63,10 @@ class MinimalPublisher(Node):
             pos.orientation.z,
             pos.orientation.w,
         ) = fk.rot
+
+        quat = sp.Rotation.from_quat(fk.rot)
+        print(quat.as_euler("ZYX"))
+
         self.robot_position.publish(pos)
 
     # Method to calculate joint angles and publish target angles
@@ -77,27 +90,33 @@ class MinimalPublisher(Node):
             ],
         )
 
-        # Create a new message for publishing
+        # Publish only one point to JointTrajectory
         traj = JointTrajectory()
         traj.joint_names = jointNames
         point = JointTrajectoryPoint()
         point.positions = angles.tolist()
-        point.time_from_start = Duration(seconds=10).to_msg()
+        point.time_from_start = Duration(seconds=0).to_msg()
         traj.points.append(point)
 
         # Publish the calculated joint angles
         self.target_angles.publish(traj)
 
+    def move_gripper(self, msg: Float32):
+        print("Recived gripper goal", msg.data)
+        gripper_msg = GripperCommand.Goal()
+        gripper_msg.command.position = msg.data
+        gripper_msg.command.max_effort = 100.0
+        print(gripper_msg)
+        self.gripper_client.send_goal_async(gripper_msg)
 
-# Main function to initialize the node and start the event loop
+
 def main():
-    rclpy.init()  # Initialize the ROS 2 client library
-    minimal_publisher = MinimalPublisher()  # Create an instance of MinimalPublisher
+    rclpy.init()
+    minimal_publisher = MinimalPublisher()
     rclpy.spin(minimal_publisher)
-    minimal_publisher.destroy_node()  # Explicitly destroy the node
-    rclpy.shutdown()  # Shutdown the ROS 2 client library
+    minimal_publisher.destroy_node()
+    rclpy.shutdown()
 
 
-# Entry point of the script
 if __name__ == "__main__":
-    main()  # Call the main function to start the node
+    main()

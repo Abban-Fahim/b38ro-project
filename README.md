@@ -90,17 +90,50 @@ It should about take 5 mins to complete the build and then you're good to go :)
 
 ## Progress on physical robot
 
- - Video feed through fone (termux/web)
- - To start the moveit commander, run `ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_type:=gen3_lite gripper:=gen3_lite_2f robot_ip:=yyy.yyy.yy.yy use_fake_hardware:=True`
- - To start the real robot, run `ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_type:=gen3_lite gripper:=gen3_lite_2f robot_ip:=192.168.1.10 use_fake_hardware:=False`
- - To send joint commands, run 
+To start the moveit commander, run 
+
+```bash
+ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_type:=gen3_lite gripper:=gen3_lite_2f robot_ip:=yyy.yyy.yy.yy use_fake_hardware:=True
+```
+ 
+To start the real robot, run 
  
 ```bash
-ros2 topic pub /joint_trajectory_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{  joint_names: [joint_1, joint_2, joint_3, joint_4, joint_5, joint_6],
-  points: [
-    { positions: [2, 2, 2, 2, 2, 2], time_from_start: { sec: 10 } },
-  ]
-}" -1
+ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_type:=gen3_lite gripper:=gen3_lite_2f robot_ip:=192.168.1.10 use_fake_hardware:=False
+```
+ 
+To send joint commands, 
+ 
+```bash
+  ros2 topic pub /joint_trajectory_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{  joint_names: [joint_1, joint_2, joint_3, joint_4, joint_5, joint_6],
+    points: [
+      { positions: [2, 2, 2, 2, 2, 2], time_from_start: { sec: 10 } },
+    ]
+  }" -1
+```
+
+### Commanding robot
+
+To move the arm with a controller
+
+```bash
+ros2 service call /controller_manager/switch_controller controller_manager_msgs/srv/SwitchController "{
+  activate_controllers: [twist_controller],
+  deactivate_controllers: [joint_trajectory_controller],
+  strictness: 1,
+  activate_asap: true,
+}"
+```
+
+To switch back
+
+```bash
+ros2 service call /controller_manager/switch_controller controller_manager_msgs/srv/SwitchController "{
+  activate_controllers: [joint_trajectory_controller],
+  deactivate_controllers: [twist_controller],
+  strictness: 1,
+  activate_asap: true,
+}"
 ```
 
 ## Ongoing tasks

@@ -43,17 +43,20 @@ function sysCall_init()
     
     ros.createSubscription('/joint_trajectory_controller/joint_trajectory', 'trajectory_msgs/msg/JointTrajectory', 'angle_cb')
     
-    statePub = ros.createPublisher('/robot_state', 'std_msgs/msg/Float32MultiArray')
+    statePub = ros.createPublisher('/joint_states', 'sensor_msgs/msg/JointState')
     
     -- do some initialization here
 end
 
 function sysCall_actuation()
     local jointAngles = {}
-    for i=1,6,1 do
-        jointAngles[i]=sim.getJointPosition(sim.getObject('./J'..(i-1)))
+    jointAngles[1]=sim.getJointPosition(sim.getObject('./J0'))
+    jointAngles[2]=0
+    for i=2,6,1 do
+        jointAngles[i+1]=sim.getJointPosition(sim.getObject('./J'..(i-1)))
     end
-    ros.publish(statePub, {data=jointAngles})
+    print(jointAngles)
+    ros.publish(statePub, {position=jointAngles})
 end
 
 function sysCall_sensing()
