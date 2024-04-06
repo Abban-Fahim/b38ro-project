@@ -11,8 +11,6 @@ from geometry_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from rclpy.time import Duration
-
-# import numpy as np
 import scipy.spatial.transform as sp
 
 jointNames = ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"]
@@ -46,47 +44,49 @@ class MinimalPublisher(Node):
         # Load robot from URDF file
         file_path = "../assets/urdf/KR7108-URDF/KR7108-URDF.urdf"
         self.robot = SingleArm(file_path, Transform(rot=[0.0, 0.0, 0.0], pos=[0, 0, 0]))
-        self.robot.setup_link_name("BASE", "DUMMY")
+        self.robot.setup_link_name("BASE", "END_EFFECTOR")
 
         self.robot_state = [0, 0, 0, 0, 0, 0]
 
     def set_robot_state(self, msg: JointState):
-        self.robot_state = msg.position
-        print(len(self.robot_state))
-        self.robot_state.pop(1)
-        fk = self.robot.forward_kin(self.robot_state)["END_EFFECTOR"]
+        self.robot_state = msg.position  # set robot's joint config from message
+        self.robot_state.pop(1)  # remove the second element containing gripper position
+        fk = self.robot.forward_kin(self.robot_state)[
+            "END_EFFECTOR"
+        ]  # forward kinematics to find end-effector Pose
         pos = Pose()
         pos.position.x, pos.position.y, pos.position.z = fk.pos
+        # convert from quaternion to ZYX Euler angles
+        quat = sp.Rotation.from_quat(fk.rot)
+        eulers = quat.as_euler("ZYX")
         (
             pos.orientation.x,
             pos.orientation.y,
             pos.orientation.z,
-            pos.orientation.w,
-        ) = fk.rot
-
-        quat = sp.Rotation.from_quat(fk.rot)
-        print(quat.as_euler("ZYX"))
+        ) = eulers
 
         self.robot_position.publish(pos)
 
-    # Method to calculate joint angles and publish target angles
     def move_to_angles(self, msg: Pose):
 
         # Calculate forward kinematics to get the initial end-effector pose
-        self.robot.forward_kin(self.robot_state)
-        print(self.robot_state)
+        self.robot.set_transform(self.robot_state)
 
         # Calculate inverse kinematics for the received Cartesian pose
+        # Convert Euler angles recived to a quaternion
+        eulers = [msg.orientation.x, msg.orientation.y, msg.orientation.z]
+        quat = sp.Rotation.from_euler("ZYX", eulers).as_quat()
+        # quat = [0, 0, 1, 1]
         angles = self.robot.inverse_kin(
             self.robot_state,
             [
                 msg.position.x,
                 msg.position.y,
                 msg.position.z,
-                msg.orientation.x,
-                msg.orientation.y,
-                msg.orientation.z,
-                msg.orientation.w,
+                quat[0],
+                quat[1],
+                quat[2],
+                quat[3],
             ],
         )
 
@@ -99,6 +99,7 @@ class MinimalPublisher(Node):
         traj.points.append(point)
 
         # Publish the calculated joint angles
+        print(eulers, angles)
         self.target_angles.publish(traj)
 
     def move_gripper(self, msg: Float32):

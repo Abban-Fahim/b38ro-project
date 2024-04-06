@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="100mm"
+   height="100mm"
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="cross.svg"
+   inkscape:export-filename="/home/abban/b38ro-project/coppelia/cross.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="true"
+     inkscape:document-units="mm"
+     showgrid="false"
+     showborder="true"
+     inkscape:showpageshadow="false"
+     width="100mm"
+     units="mm"
+     height="100mm"
+     inkscape:zoom="1.1046577"
+     inkscape:cx="151.17805"
+     inkscape:cy="160.23063"
+     inkscape:window-width="1904"
+     inkscape:window-height="988"
+     inkscape:window-x="103"
+     inkscape:window-y="103"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#000014;fill-rule:evenodd;stroke-width:0.241897;fill-opacity:1"
+       id="rect31"
+       width="14.759067"
+       height="117.2515"
+       x="-9.7896328"
+       y="12.172143"
+       transform="matrix(0.61511724,-0.78843566,0.72580668,0.68789873,0,0)" />
+    <rect
+       style="fill:#000014;fill-rule:evenodd;stroke-width:0.241897;fill-opacity:1"
+       id="rect31-3"
+       width="14.759067"
+       height="117.2515"
+       x="63.422585"
+       y="-52.108219"
+       transform="matrix(0.76542682,0.64352294,-0.71396677,0.70017958,0,0)" />
+  </g>
+</svg>
