@@ -1,7 +1,13 @@
 -- lua
 
 function gripper_cb(msg)
-    print(msg.data) -- Got gripper command for which to move to
+    print(msg.data) -- Get gripper command for which to move to
+    if msg.data == 0.0 then
+        print("nigga")
+    else
+        print("grab yo balls");
+        
+    end
     sim.setJointTargetPosition(jointR1, 0.8 - msg.data)
     sim.setJointTargetPosition(jointL1, -(0.8 - msg.data))
 end

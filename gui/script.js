@@ -120,27 +120,3 @@ const angles_chart = new Chart(document.getElementById("joint_angles"), {
     }
 })
 
-// const modelViewer = new ROS3D.Viewer({
-//     divID: "urdf",
-//     width: 800,
-//     height: 600,
-//     antialias: true
-// })
-
-// const tfClient = new ROSLIB.TFClient({
-//     ros,
-//     angularThres: 0.01,
-//     transThres: 0.01,
-//     rate: 10.0
-// });
-
-// const urdfClient = new ROS3D.UrdfClient({
-//     ros,
-//     tfClient: tfClient,
-//     path: 'http://resources.robotwebtools.org/',
-//     rootObject : modelViewer.scene,
-//     loader: ROS3D.COLLADA_LOADER_2
-// });
-
-// modelViewer.addObject(new ROS3D.Grid());
-

@@ -72,10 +72,14 @@ Clone the repository for (simROS)[https://github.com/CoppeliaRobotics/simROS2/] 
 
 Add the following in the `interfaces.txt`: 
 
-```bash
+```
 std_msgs/msg/Float32MultiArray
 std_msgs/msg/MultiArrayLayout
 std_msgs/msg/MultiArrayDimension
+trajectory_msgs/msg/JointTrajectory
+trajectory_msgs/msg/JointTrajectoryPoint
+sensor_msgs/msg/JointState
+geometry_msgs/msg/Twist
 ```
 
 Change the cloned directory's name to `sim_ros2_interface` and run 

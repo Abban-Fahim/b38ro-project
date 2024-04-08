@@ -17,7 +17,6 @@ end
 
 function sysCall_sensing()
     local img_data, width, height = sim.getVisionSensorCharImage(colorCam)
-    print(width, img_data)
     ros.publish(rgb_pub, {
         data=img_data,
         width=width,
