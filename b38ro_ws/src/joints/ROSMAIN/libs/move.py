@@ -1,5 +1,5 @@
 # imports
-
+import graphtests.py as gra
 
 
 
@@ -22,4 +22,4 @@ def det_bord_cart():
 	#of corner 2
 	
 	
-	return 
+	return gra.ris(c1cp,c2cp)
