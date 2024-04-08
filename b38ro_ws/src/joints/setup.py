@@ -21,6 +21,7 @@ setup(
         "console_scripts": [
             "talker=joints.pub2:main",
             "controller=joints.controller:main",
+            "game=joints.main:main",
         ],
     },
 )

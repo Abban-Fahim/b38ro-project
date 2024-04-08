@@ -69,6 +69,8 @@ class MinimalPublisher(Node):
 
     def move_to_angles(self, msg: Pose):
 
+        print(msg)
+
         # Calculate forward kinematics to get the initial end-effector pose
         self.robot.set_transform(self.robot_state)
 
@@ -99,7 +101,7 @@ class MinimalPublisher(Node):
         traj.points.append(point)
 
         # Publish the calculated joint angles
-        print(eulers, angles)
+        # print(eulers, angles)
         self.target_angles.publish(traj)
 
     def move_gripper(self, msg: Float32):

@@ -1,5 +1,5 @@
 # imports
-import graphtests as gra
+from .graphtests import ris
 
 
 # functions
@@ -27,4 +27,4 @@ def det_bord_cart():
     ]  # create a function to give control and get the cartesian position
     # of corner 2
 
-    return gra.ris(c1cp, c2cp)
+    return ris(c1cp, c2cp)
