@@ -34,7 +34,7 @@ class Game(Node):
     def __init__(self):
         super().__init__("game_logic")
 
-        # self.create_subscription(Joy, "/joy", self.controller_cb, 10)
+        #self.create_subscription(Joy, "/joy", self.controller_cb, 10)
 
         self.coords = det_bord_cart()
 
@@ -47,20 +47,7 @@ class Game(Node):
         self.retract.position.y = 0.0
         self.retract.position.z = 1.0
 
-        # for coord in self.coords:
-        #     newMsg = Pose()
-        #     newMsg.position.x = coord[0]
-        #     newMsg.position.y = coord[1]
-        #     newMsg.position.z = 0.4
 
-        #     newMsg.orientation.x = math.pi
-        #     newMsg.orientation.y = 0.0
-        #     newMsg.orientation.z = 0.0
-        #     print(newMsg)
-        #     self.position_topic.publish(newMsg)
-        #     time.sleep(10)
-        #     self.position_topic.publish(self.retract)
-        #     time.sleep(5)
 
     def move_to_position(self, x, y, z):
         newMsg = Pose()
@@ -80,6 +67,7 @@ class Game(Node):
         # drop it
         # go back to retract
         print(msg)
+        self.position_topic.publish(self.retract)
 
 
 def main():
