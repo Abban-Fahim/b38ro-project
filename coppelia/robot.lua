@@ -40,15 +40,25 @@ end
 function sysCall_init()
     sim = require('sim')
     ros = require('simROS2')
+
+    -- code for tetsing an IK environment, only to proof our Jacobian matrices with coppelia's
+    -- simIK = require("simIK")
+    -- ikEnv=simIK.createEnvironment()
+    -- ikGroup=simIK.createGroup(ikEnv)
+    -- tip = sim.getObject("./tip")
+    -- target = sim.getObject("./target")
+    -- -- targe = sim.getObject("./Sphere")
+    -- simIK.addElementFromScene(ikEnv,ikGroup,-1,tip,target,simIK.constraint_pose)
+    -- simIK.handleGroup(ikEnv,ikGroup,{syncWorlds=true,allowError=true})
     
     ros.createSubscription('/joint_trajectory_controller/joint_trajectory', 'trajectory_msgs/msg/JointTrajectory', 'angle_cb')
-    jacPub = ros.cretePublisher('/jacob_matrix','geometry_msgs/msg/Pose')
+    -- jacPub = ros.cretePublisher('/jacob_matrix','geometry_msgs/msg/Pose')
     statePub = ros.createPublisher('/joint_states', 'sensor_msgs/msg/JointState')
     
-    -- do some initialization here
 end
 
 function sysCall_actuation()
+
     local jointAngles = {}
     jointAngles[1]=sim.getJointPosition(sim.getObject('./J0'))
     jointAngles[2]=0

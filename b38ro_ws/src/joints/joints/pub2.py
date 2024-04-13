@@ -1,15 +1,19 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Float32MultiArray
+from geometry_msgs.msg import Pose
+from sensor_msgs.msg import JointState
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+
 from rclpy.action import ActionClient
 from control_msgs.action import GripperCommand
+
 from pykin.robots.single_arm import SingleArm
 from pykin.kinematics.transform import (
     Transform,
 )
-from geometry_msgs.msg import Pose
-from sensor_msgs.msg import JointState
-from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from pykin.kinematics.jacobian import calc_jacobian
+
 from rclpy.time import Duration
 import scipy.spatial.transform as sp
 
@@ -28,6 +32,9 @@ class MinimalPublisher(Node):
 
         # Publisher for FK computation
         self.robot_position = self.create_publisher(Pose, "robot_position", 10)
+        self.robot_jacobians = self.create_publisher(
+            Float32MultiArray, "robot_jacobian", 10
+        )
 
         # Action client for moving the gripper
         self.gripper_client = ActionClient(
@@ -47,13 +54,22 @@ class MinimalPublisher(Node):
         self.robot.setup_link_name("BASE", "END_EFFECTOR")
 
         self.robot_state = [0, 0, 0, 0, 0, 0]
+        self.jacobian = []
 
     def set_robot_state(self, msg: JointState):
         self.robot_state = msg.position  # set robot's joint config from message
         self.robot_state.pop(1)  # remove the second element containing gripper position
-        fk = self.robot.forward_kin(self.robot_state)[
-            "END_EFFECTOR"
-        ]  # forward kinematics to find end-effector Pose
+
+        # forward kinematics to find end-effector Pose
+        fk = self.robot.forward_kin(self.robot_state)
+
+        # Calculate and publish jacobian
+        self.jacobian = calc_jacobian(self.robot.desired_frames, fk, 6)
+        jacMsg = Float32MultiArray()
+        jacMsg.data = self.jacobian.flatten().tolist()
+        self.robot_jacobians.publish(jacMsg)
+
+        fk = fk["END_EFFECTOR"]
         pos = Pose()
         pos.position.x, pos.position.y, pos.position.z = fk.pos
         # convert from quaternion to ZYX Euler angles
@@ -65,11 +81,10 @@ class MinimalPublisher(Node):
             pos.orientation.z,
         ) = eulers
 
+        # Publish FK of robot
         self.robot_position.publish(pos)
 
     def move_to_angles(self, msg: Pose):
-
-        print(msg)
 
         # Calculate forward kinematics to get the initial end-effector pose
         self.robot.set_transform(self.robot_state)

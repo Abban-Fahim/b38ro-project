@@ -63,6 +63,20 @@ input[type=range]::-moz-range-track {
     border: none;
 }
 
+table {
+    border-spacing: 0;
+}
+thead td {
+    font-weight: bold;
+    color: var(--base05);
+}
+td {
+    padding: 6px;
+    border: 2px solid var(--base02);
+    text-align: center;
+}
+
+
 #urdfContainer {
     display: flex;
 }

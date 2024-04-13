@@ -19,6 +19,9 @@ const joint_angles = new ROSLIB.Topic({
 const robot_position = new ROSLIB.Topic({
     ros, name: "/robot_position", messageType: "geometry_msgs/Pose"
 });
+const robot_jacobian = new ROSLIB.Topic({
+    ros, name: "/robot_jacobian", messageType: "std_msgs/Float32MultiArray"
+});
 
 let global_joint_angles = [];
 joint_angles.subscribe((msg)=>{
@@ -41,6 +44,32 @@ robot_position.subscribe((msg)=>{
     arm_pos_display.innerHTML = `Cartesian position: X: ${eef_tf.pos.x}, Y: ${eef_tf.pos.y}, Z: ${eef_tf.pos.z}`;
     arm_rot_display.innerHTML = `Euler angles: Z: ${eef_tf.angles.z}, Y: ${eef_tf.pos.y}, X: ${eef_tf.angles.x}`;
     
+})
+
+let jacobian = [];
+const JTable = document.querySelector("table");
+robot_jacobian.subscribe((msg)=>{
+    // Clear table
+    jacobian = [];
+    JTable.childNodes[3].innerHTML = "";
+
+    for (let i = 0; i < 6; i++) {
+        // Clear row
+        let row = [];
+        
+        // Create next row
+        let tr = document.createElement("tr");
+        for (let j = 0; j < 6; j++) {
+            row.push(msg.data[i*6 + j]);
+            let td = document.createElement("td");
+            td.innerText = msg.data[i*6 + j];
+            tr.appendChild(td);
+        }
+   
+        // Append row to table body
+        JTable.childNodes[3].appendChild(tr);
+        jacobian.push(row);
+    }
 })
 
 pos_x = document.getElementById("pos_x");
