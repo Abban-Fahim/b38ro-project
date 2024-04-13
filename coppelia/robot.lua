@@ -42,7 +42,7 @@ function sysCall_init()
     ros = require('simROS2')
     
     ros.createSubscription('/joint_trajectory_controller/joint_trajectory', 'trajectory_msgs/msg/JointTrajectory', 'angle_cb')
-    
+    jacPub = ros.cretePublisher('/jacob_matrix','geometry_msgs/msg/Pose')
     statePub = ros.createPublisher('/joint_states', 'sensor_msgs/msg/JointState')
     
     -- do some initialization here

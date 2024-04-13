@@ -12,7 +12,8 @@ import time
 # import tttai.py as t
 # import waitformove.py as w
 from .move import det_bord_cart
-
+from .tttai import dec 
+from .tttai import win
 # import firstmove.py as fm
 
 
@@ -36,18 +37,26 @@ class Game(Node):
 
         #self.create_subscription(Joy, "/joy", self.controller_cb, 10)
 
-        self.coords = det_bord_cart()
+        #self.coords = det_bord_cart()
 
         self.position_topic = self.create_publisher(Pose, "/cart_pose", 10)
 
-        self.create_subscription(float, "/last_move", self.move_made, 10)
+        #store board state 
+        self.b_s = [0,0,0,0,0,0,0,0,0]
+        #store board carteisan position and calculate cp of each point
+        self.p1 = 0 #replace with way to get cp of p1
+        self.p2 = 0 #replace with way to get cp of p2
 
+        self.b_cp = det_bord_cart(self.p1,self.p2)     
+
+        #define resting pose 
         self.retract = Pose()
         self.retract.position.x = 0.0
         self.retract.position.y = 0.0
         self.retract.position.z = 1.0
+        
 
-
+    
 
     def move_to_position(self, x, y, z):
         newMsg = Pose()
@@ -66,8 +75,10 @@ class Game(Node):
         # move to the board position
         # drop it
         # go back to retract
-        print(msg)
+        
         self.position_topic.publish(self.retract)
+
+
 
 
 def main():

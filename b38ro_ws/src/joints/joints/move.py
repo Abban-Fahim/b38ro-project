@@ -14,17 +14,12 @@ from .graphtests import ris
 # 	# or just by physical command (Read Readme in ROSMAIN)
 
 
-def det_bord_cart():
+def det_bord_cart(c1cp,c2cp):
     # code that asks for user to calibrate board position
-    c1cp = [
-        0.1,
-        0.25,
-    ]  # create a function to give control and get the cartesian position
-    # of corner 1
-    c2cp = [
-        0.325,
-        0.525,
-    ]  # create a function to give control and get the cartesian position
-    # of corner 2
-
+    c1cp[0] = input("carteasian pos of first pos x")
+    c1cp[1] = input("carteasian pos of first pos y")
+    c2cp[0] = input("cartesian positions of second pos x")
+    c2cp[1] = input("cartesian positions of second pos y")
+    
+    # replace above with vision based in future 
     return ris(c1cp, c2cp)
