@@ -41,11 +41,15 @@ class Game(Node):
 
         self.position_topic = self.create_publisher(Pose, "/cart_pose", 10)
 
-        #store board state 
+        #store board state 0=empty ,2=ai taken ,1=player taken
         self.b_s = [0,0,0,0,0,0,0,0,0]
+        #store current player and winner if any 
+        self.win = 0
+
         #store board carteisan position and calculate cp of each point
-        self.p1 = 0 #replace with way to get cp of p1
-        self.p2 = 0 #replace with way to get cp of p2
+        self.p1 = [1,1] #future implement method to 
+        self.p2 = [0,0] #find positions and calibrate with cp ,do in move.py
+
 
         self.b_cp = det_bord_cart(self.p1,self.p2)     
 
@@ -54,6 +58,43 @@ class Game(Node):
         self.retract.position.x = 0.0
         self.retract.position.y = 0.0
         self.retract.position.z = 1.0
+
+        #main game logic    
+        
+        #det if human / ai go first 
+        self.turn = int(input('Who go first ,AI =0 ,HUMAN = 1'))
+        self.playing = True
+        # Main loop 
+        while self.playing :
+
+            while self.win == 0 :
+                if self.turn == 2:
+                    self.mov_to_make = dec(self.b_s)
+                    self.move_made(self.b_cp[self.mov_to_make])
+                    self.b_s[self.mov_to_make]=2
+                    if win(2,self.b_s):
+                        self.win = 2
+
+                    self.turn = 1
+                elif self.mov == 1 :
+                    self.b_s[int(input("What move was made"))] = 1
+                    if win(1,self.b_s):
+                        self.win = 1
+                    self.turn  = 2
+
+            if self.win == 1 :
+                self.rob_celeb()
+
+            elif self.win == 2:
+                self.rage()
+
+            if int(input('Press 1 after reseting the board to play again')):
+                self.b_s = [0,0,0,0,0,0,0,0,0]
+                self.win = 0
+                self.turn = int(input('Who go first ,AI =0 ,HUMAN = 1'))
+
+
+
         
 
     
@@ -77,7 +118,15 @@ class Game(Node):
         # go back to retract
         
         self.position_topic.publish(self.retract)
-
+    
+    def rob_celeb():
+        # idk have the robot do something when it wins ?
+        # make it twerk or sthm :>
+        print('HAHAHAHAHAHA THE AI WON U SUCH A NOOB')
+    
+    def rob_rage():
+        #make the robot sweep the game peices off the board when it louses :)
+        print('comon man ill win next time')
 
 
 
