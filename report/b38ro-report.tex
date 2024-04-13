@@ -1,19 +1,60 @@
-\documentclass{report}
-\usepackage[style=ieee]{biblatex}
+\documentclass{article}
+
+\usepackage[style=authoryear]{biblatex}
 \addbibresource{b38ro-report.bib}
+\renewcommand*{\nameyeardelim}{\addcomma\space}
 
 \begin{document}
 
-\title{B38RO Group Project}
-\author{Muhammad Abban, Mohammed Laith, Abdul Maajid Aga}
-\date{April 2024}
+\title{B38RO - Robotics Group Project}
+\author{Muhammad Abban \and Mohammed Laith \and Abdul Maajid Aga}
+\date{\parbox{\linewidth}{\centering%
+  School of Engineering and Physical Sciences \endgraf
+  Heriot Watt University Dubai \endgraf\bigskip
+  April 2024 }}
 \maketitle
+\bigskip
 
 \tableofcontents
+\newpage
 
-\chapter{Hello}
+\section{Introduction}
 
-This document references a book \autocite{craigIntroductionRoboticsMechanics2014}. YEa
+Explain what we are doing with simulating a robotic manipulator, why a robotic manipulator, what we doing with it (a game), and we chose the manipulator.
+
+This document references a book \autocite{craigIntroductionRoboticsMechanics2014} (use in next section actually).
+
+\section{Theory}
+
+Describe stuff about euler angeles (were calculated using \autocite{bernardesQuaternionEulerAngles2022}), FK and IK, and DH params of our robot.
+
+\section{Software}
+
+\subsection{Framework}
+
+mainly talk bout ROS and our joint-angle protocol, as well as our unconventional use of quaternions to store euler angles. also describe and cite our pykin/ikpy library.
+
+this also talks about most of the project requirements, on how we compute those and whatnot. 
+
+\subsection{Simulation}
+
+talk about how we setup coppeliasim for the simulation, including the arm, its gripper, and the scene.
+
+also a paragraph on how we setup the controller.
+
+\subsection{Game logic}
+
+we describe our TTT AI, our computer vision, and the FSM logic used for playing the game, as well as the pick and place theory.
+
+\subsection{Testing on hardware}
+
+we describe the challenges and considerations we had to take while operating our code on hardware.
+
+\section{Conclusion}
+
+simple stuff + where we our work can be used IRL.
+
+\section{References}
 
 \printbibliography
 
