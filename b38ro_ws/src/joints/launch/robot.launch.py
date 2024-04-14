@@ -21,6 +21,6 @@ def generate_launch_description():
                     )
                 )
             ),
-            Node(package="joints", executable="talker", name="namee"),
+            Node(package="joints", executable="talker"),
         ]
     )

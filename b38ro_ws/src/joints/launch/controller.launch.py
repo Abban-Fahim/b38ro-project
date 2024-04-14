@@ -14,7 +14,7 @@ def generate_launch_description():
     return LaunchDescription(
         [
             # Node that reads controller states
-            Node(package="joy", executable="joy_node", name="joy_node"),
+            Node(package="joy", executable="joy_node"),
             # Node that sends commands to robot
             Node(package="joints", executable="controller"),
             RegisterEventHandler(OnShutdown(on_shutdown=shutdown_cb)),
