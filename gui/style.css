@@ -22,6 +22,35 @@ body {
     color: var(--base07);
     font-family: 'Ubuntu Mono';
 }
+h2 {
+    font-size: 30px;
+}
+div {
+    font-size: 24px;
+}
+
+main{
+    display: flex;
+}
+
+#grid {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 450px;
+    height: 450px;
+    margin: 0 auto;
+}
+
+#grid div {
+    font-size: 145px;
+    text-align: center;
+    place-self: center;
+    border: var(--base07) solid 2px;
+    height: 100%;
+    width: 100%;
+    margin-bottom: 20px;
+}
 
 button {
     background: var(--base0F);
@@ -74,6 +103,7 @@ td {
     padding: 6px;
     border: 2px solid var(--base02);
     text-align: center;
+    font-size: 18px;
 }
 
 #charts {
