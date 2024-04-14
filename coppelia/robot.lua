@@ -59,14 +59,16 @@ end
 
 function sysCall_actuation()
 
+    local jointNames = {}
     local jointAngles = {}
-    jointAngles[1]=sim.getJointPosition(sim.getObject('./J0'))
-    jointAngles[2]=0
-    for i=2,6,1 do
-        jointAngles[i+1]=sim.getJointPosition(sim.getObject('./J'..(i-1)))
+    local jointVelocities = {}
+    for i=1,6,1 do
+        jointAngles[i]=sim.getJointPosition(sim.getObject('./J'..(i-1)))
+        jointVelocities[i]=sim.getJointVelocity(sim.getObject('./J'..(i-1)))
+        jointNames[i]='joint_'..i
     end
     -- print(jointAngles)
-    ros.publish(statePub, {position=jointAngles})
+    ros.publish(statePub, {name=jointNames, position=jointAngles, velocity=jointVelocities})
 end
 
 function sysCall_sensing()

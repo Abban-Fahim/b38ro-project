@@ -23,11 +23,15 @@ const robot_jacobian = new ROSLIB.Topic({
     ros, name: "/robot_jacobian", messageType: "std_msgs/Float32MultiArray"
 });
 
-let global_joint_angles = [];
+let global_joint_angles = [0, 0, 0, 0, 0, 0];
+let global_joint_velocities = [0, 0, 0, 0, 0, 0];
 joint_angles.subscribe((msg)=>{
-   global_joint_angles[0] = msg.position[0];
-   for (let i = 2; i < 7; i++) {
-    global_joint_angles[i-1] = msg.position[i];
+   for (let i = 0; i < msg.name.length; i++) {
+    if (msg.name[i].startsWith("joint_")) {
+        let index = Number(msg.name[i][msg.name[i].length - 1]) - 1;
+        global_joint_angles[index] = msg.position[i];
+        global_joint_velocities[index] = msg.velocity[i];
+    }
    }
 });
 
@@ -93,37 +97,37 @@ document.getElementById("move").onclick = (e) => {
     cartesian_pos.publish({position: {x, y, z}, orientation: {x:Math.PI, y:0, z:0}})
 }
 
-const angles_chart = new Chart(document.getElementById("joint_angles"), {
+const new_chart = (array, elID, axesLabel) => new Chart(document.getElementById(elID), {
     type: "line",
     data: {
         datasets: [
             {
-                label: "Joint 0",
+                label: "Joint 1",
                 borderColor: "#BF616A",
                 data: []
             },
             {
-                label: "Joint 1",
+                label: "Joint 2",
                 borderColor: "#D08770",
                 data: []
             },
             {
-                label: "Joint 2",
+                label: "Joint 3",
                 borderColor: "#EBCB8B",
                 data: []
             },
             {
-                label: "Joint 3",
+                label: "Joint 4",
                 borderColor: "#A3BE8C",
                 data: []
             },
             {
-                label: "Joint 4",
+                label: "Joint 5",
                 borderColor: "#88C0D0",
                 data: []
             },
             {
-                label: "Joint 5",
+                label: "Joint 6",
                 borderColor: "#B48EAD",
                 data: []
             },
@@ -139,13 +143,21 @@ const angles_chart = new Chart(document.getElementById("joint_angles"), {
                         chart.data.datasets.forEach((dataset, i)=>{
                             dataset.data.push({
                                 x: Date.now(),
-                                y: global_joint_angles[i]
+                                y: array[i]
                             })
                         })
                     }
                 }
+            },
+            y: {
+                title: {
+                    text: axesLabel,
+                    display: true
+                },
             }
         }
     }
 })
 
+const angles_chart = new_chart(global_joint_angles, "joint_angles", "(rad)");
+const vel_chart = new_chart(global_joint_velocities, "joint_vel", "rad/s");

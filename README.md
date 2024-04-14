@@ -49,14 +49,12 @@ source install/setup.bash
 Then run the example ROS node with
 
 ```bash
-ros2 run joints talker
+ros2 launch joints robot.launch.py
 ```
 
 Now starting the simulation should show start logging whatever the node publishes.
 
-## Run the web-based GUI
-
-Install the package `ros-humble-rosbridge-suite` and start the rosbridge websocket server using
+This launch file should also start the rosbridge websocket server if you have the package `ros-humble-rosbridge-suite` installed. If not started, run
 
 ```bash
 ros2 launch rosbridge_server rosbridge_websocket_launch.xml
@@ -94,7 +92,7 @@ It should about take 5 mins to complete the build and then you're good to go :)
 
 ## Progress on physical robot
 
-To start the moveit commander, run 
+To simulate the moveit commander, run 
 
 ```bash
 ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_type:=gen3_lite gripper:=gen3_lite_2f robot_ip:=yyy.yyy.yy.yy use_fake_hardware:=True
@@ -118,32 +116,13 @@ To send joint commands,
 
 ### Commanding robot
 
-To move the arm with a controller
+To move the arm with a controller, connect a PS4 controller through USB (natively only works on Linux), and run
 
 ```bash
-ros2 service call /controller_manager/switch_controller controller_manager_msgs/srv/SwitchController "{
-  activate_controllers: [twist_controller],
-  deactivate_controllers: [joint_trajectory_controller],
-  strictness: 1,
-  activate_asap: true,
-}"
-```
-
-To switch back
-
-```bash
-ros2 service call /controller_manager/switch_controller controller_manager_msgs/srv/SwitchController "{
-  activate_controllers: [joint_trajectory_controller],
-  deactivate_controllers: [twist_controller],
-  strictness: 1,
-  activate_asap: true,
-}"
+ros2 launch joints controller.launch.py
 ```
 
 ## Ongoing tasks
 
  - how to pick
- - Calculate Jacobian
-   - Through coppelia, but not ideal
-   - Migrate to a different library which solves it for us (pykin)[https://github.com/jdj2261/pykin] or (kinpy)[https://github.com/neka-nat/kinpy]
 

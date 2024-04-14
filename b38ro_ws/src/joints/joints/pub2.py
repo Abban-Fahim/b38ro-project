@@ -53,15 +53,28 @@ class MinimalPublisher(Node):
         self.robot = SingleArm(file_path, Transform(rot=[0.0, 0.0, 0.0], pos=[0, 0, 0]))
         self.robot.setup_link_name("BASE", "END_EFFECTOR")
 
-        self.robot_state = [0, 0, 0, 0, 0, 0]
+        self.robot_angles = [0, 0, 0, 0, 0, 0]
+        self.robot_velocities = [0, 0, 0, 0, 0, 0]
         self.jacobian = []
 
     def set_robot_state(self, msg: JointState):
-        self.robot_state = msg.position  # set robot's joint config from message
-        self.robot_state.pop(1)  # remove the second element containing gripper position
+        # set robot's joint config from message
+        # Since this message is published by low-level code on the arm driver,
+        # the order in which the joint values are published are is psuedo-random.
+        # The name attribute of the msg contains an array in which these joints are published
+        # Explanation: https://github.com/UniversalRobots/Universal_Robots_ROS_Driver/issues/619
+        for i in range(len(msg.name)):
+            # Is a joint angle
+            joint_name = msg.name[i]
+            if joint_name.startswith("joint_"):
+                # Get last character in the name, containing number
+                num = int(joint_name[len(joint_name) - 1]) - 1
+                self.robot_angles[num] = msg.position[i]
+                self.robot_velocities[num] = msg.velocity[i]
+                # print(num, joint_name, i)
 
         # forward kinematics to find end-effector Pose
-        fk = self.robot.forward_kin(self.robot_state)
+        fk = self.robot.forward_kin(self.robot_angles)
 
         # Calculate and publish jacobian
         self.jacobian = calc_jacobian(self.robot.desired_frames, fk, 6)
@@ -87,7 +100,7 @@ class MinimalPublisher(Node):
     def move_to_angles(self, msg: Pose):
 
         # Calculate forward kinematics to get the initial end-effector pose
-        self.robot.set_transform(self.robot_state)
+        self.robot.set_transform(self.robot_angles)
 
         # Calculate inverse kinematics for the received Cartesian pose
         # Convert Euler angles recived to a quaternion
@@ -95,7 +108,7 @@ class MinimalPublisher(Node):
         quat = sp.Rotation.from_euler("ZYX", eulers).as_quat()
         # quat = [0, 0, 1, 1]
         angles = self.robot.inverse_kin(
-            self.robot_state,
+            self.robot_angles,
             [
                 msg.position.x,
                 msg.position.y,
