@@ -17,19 +17,6 @@ from .tttai import win
 # import firstmove.py as fm
 
 
-# initalisation
-# r.setup()
-# m.def_pos()#move robot arm to default position
-# p_s=m.det_bord_cart()#calibrate the position of each sqaure
-# b_s=[0,0,0,0,0,0,0,0,0]
-
-# # determine who goes first
-# if (fm.h_first()):
-# 	md = w.wait()#wait for user to make move
-# 	#current implement also has user input move they made
-# 	b_s[md]=1
-# 	#if we go with comp vision we'll have 3 nodes ,one for move detection ,one for board position and one for main logic
-
 
 class Game(Node):
     def __init__(self):
@@ -47,7 +34,7 @@ class Game(Node):
         self.win = 0
 
         #store board carteisan position and calculate cp of each point
-        self.p1 = [1,1] #future implement method to 
+        self.p1 = [0.5,0.5] #future implement method to 
         self.p2 = [0,0] #find positions and calibrate with cp ,do in move.py
 
 
@@ -61,32 +48,39 @@ class Game(Node):
 
         #main game logic    
         
-        #det if human / ai go first 
-        self.turn = int(input('Who go first ,AI =0 ,HUMAN = 1'))
+        #det if shuman / ai go first 
+        self.turn = int(input('Who go first ,AI =2,HUMAN = 1'))
         self.playing = True
+        print('1st')
         # Main loop 
         while self.playing :
-
+            print('2d')
             while self.win == 0 :
+                print('3r')
                 if self.turn == 2:
+                    print('4d')
                     self.mov_to_make = dec(self.b_s)
-                    self.move_made(self.b_cp[self.mov_to_make])
+                    print('5d')
+                    self.move_make(self.b_cp[self.mov_to_make])
+                    print('6t')
                     self.b_s[self.mov_to_make]=2
+                    print('7t')
                     if win(2,self.b_s):
                         self.win = 2
 
                     self.turn = 1
-                elif self.mov == 1 :
+                elif self.turn == 1 :
+                    print(self.b_s)
                     self.b_s[int(input("What move was made"))] = 1
                     if win(1,self.b_s):
                         self.win = 1
                     self.turn  = 2
 
-            if self.win == 1 :
+            if self.win == 2:
                 self.rob_celeb()
 
-            elif self.win == 2:
-                self.rage()
+            elif self.win == 1:
+                self.rob_rage()
 
             if int(input('Press 1 after reseting the board to play again')):
                 self.b_s = [0,0,0,0,0,0,0,0,0]
@@ -110,21 +104,22 @@ class Game(Node):
         newMsg.orientation.z = 0.0
         self.position_topic.publish(newMsg)
 
-    def move_made(self, msg):
+    def move_make(self, msg):
         # Determine using ai where to place
         # pick up a block
         # move to the board position
         # drop it
         # go back to retract
         
-        self.position_topic.publish(self.retract)
+        self.move_to_position(msg[0],msg[1],0.3)
+        #time.sleep(10)
     
-    def rob_celeb():
+    def rob_celeb(self):
         # idk have the robot do something when it wins ?
         # make it twerk or sthm :>
         print('HAHAHAHAHAHA THE AI WON U SUCH A NOOB')
     
-    def rob_rage():
+    def rob_rage(self):
         #make the robot sweep the game peices off the board when it louses :)
         print('comon man ill win next time')
 
