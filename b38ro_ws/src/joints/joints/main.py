@@ -85,7 +85,7 @@ class Game(Node):
             if int(input('Press 1 after reseting the board to play again')):
                 self.b_s = [0,0,0,0,0,0,0,0,0]
                 self.win = 0
-                self.turn = int(input('Who go first ,AI =0 ,HUMAN = 1'))
+                self.turn = int(input('Who go first ,AI =2 ,HUMAN = 1'))
 
 
 
