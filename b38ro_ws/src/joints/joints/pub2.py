@@ -125,7 +125,7 @@ class MinimalPublisher(Node):
         traj.joint_names = jointNames
         point = JointTrajectoryPoint()
         point.positions = angles.tolist()
-        point.time_from_start = Duration(seconds=0).to_msg()
+        point.time_from_start = Duration(seconds=3).to_msg()
         traj.points.append(point)
 
         # Publish the calculated joint angles

@@ -4,6 +4,7 @@ from rclpy.action import ActionClient
 from rclpy.node import Node
 from rclpy.time import Duration
 from geometry_msgs.msg import Pose
+from std_msgs.msg import Float32
 import math
 import time
 
@@ -27,6 +28,8 @@ class Game(Node):
         #self.coords = det_bord_cart()
 
         self.position_topic = self.create_publisher(Pose, "/cart_pose", 10)
+        self.gripper_topic = self.create_publisher(Float32, "gripper_pose", 10)
+        self.gripper_value = Float32()
 
         #store board state 0=empty ,2=ai taken ,1=player taken
         self.b_s = [0,0,0,0,0,0,0,0,0]
@@ -34,9 +37,8 @@ class Game(Node):
         self.win = 0
 
         #store board carteisan position and calculate cp of each point
-        self.p1 = [0.5,0.5] #future implement method to 
-        self.p2 = [0,0] #find positions and calibrate with cp ,do in move.py
-
+        self.p1 = [0.3,-0.15] #future implement method to 
+        self.p2 = [0.6,0.15] #find positions and calibrate with cp ,do in move.py
 
         self.b_cp = det_bord_cart(self.p1,self.p2)     
 
@@ -89,6 +91,7 @@ class Game(Node):
 
 
 
+
         
 
     
@@ -110,8 +113,15 @@ class Game(Node):
         # move to the board position
         # drop it
         # go back to retract
-        
-        self.move_to_position(msg[0],msg[1],0.3)
+        self.position_topic.publish(self.retract)
+        time.sleep(10)
+        self.move_to_position(msg[0],msg[1],0.6)
+        time.sleep(2)
+        self.gripper_value.data = 0.0
+        self.gripper_topic.publish(self.gripper_value)
+        time.sleep(2)
+        self.gripper_value.data = 0.8
+        self.gripper_topic.publish(self.gripper_value)
         #time.sleep(10)
     
     def rob_celeb(self):
