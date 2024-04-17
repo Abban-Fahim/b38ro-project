@@ -51,7 +51,9 @@ class Game(Node):
         self.retract.position.x = 0.45
         self.retract.position.y = 0.0
         self.retract.position.z = 0.4
-
+        self.retract.orientation.x = math.pi
+        self.retract.orientation.y = 0.0
+        self.retract.orientation.z = 0.0
         # main game logic
 
         # det if shuman / ai go first

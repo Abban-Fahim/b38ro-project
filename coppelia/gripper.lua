@@ -45,10 +45,10 @@ function sysCall_init()
 
 -- c) And just before opening the gripper again, detach the previously attached shape:
 --
--- sim.setObjectParent(attachedShape,-1,true)
+    sim.setObjectParent(attachedShape,-1,true)
     
     jointArray = {jointR1, jointR2, jointL1, jointL2}
-    open_angles = {50, 12, -50, 12}
+    open_angles = {0, 0, 0, 0}
     close_angles = {0, 0, 0, 0}
 
 end
