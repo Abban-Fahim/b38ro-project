@@ -1,9 +1,10 @@
 -- lua
 
 function gripper_cb(msg)
-    
+
     if msg.data == 0.0 then
         print("opening gripper")
+        sim.setObjectParent(attachedShape, -1, true)
     else
         print("closing gripper")
         index=0
