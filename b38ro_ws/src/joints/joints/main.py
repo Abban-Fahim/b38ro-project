@@ -42,6 +42,10 @@ class Game(Node):
 
         self.b_cp = det_bord_cart(self.p1, self.p2)
 
+        # store location of cuboid location to pickup from
+        self.pp = [0.3,0.425] 
+
+
         # define resting pose
         self.retract = Pose()
         self.retract.position.x = 0.45
@@ -54,6 +58,7 @@ class Game(Node):
         self.turn = int(input("Who go first ,AI =2,HUMAN = 1"))
         self.playing = True
         print("1st")
+        self.position_topic.publish(self.retract)
         # Main loop
         while self.playing:
             print("2d")
@@ -107,17 +112,35 @@ class Game(Node):
         # move to the board position
         # drop it
         # go back to retract
-        self.position_topic.publish(self.retract)
+#
+
+
+        self.move_to_position(self.pp[0],self.pp[1],0.45)
         self.gripper_value.data = 0.2
         self.gripper_topic.publish(self.gripper_value)
+        time.sleep(10)
+        self.move_to_position(self.pp[0],self.pp[1],0.25)
+        time.sleep(10)
+        self.gripper_value.data = 0.8
+        self.gripper_topic.publish(self.gripper_value)
+        time.sleep(10)
+        self.move_to_position(self.pp[0],self.pp[1],0.45)
+        
+
+
+        self.position_topic.publish(self.retract)
         time.sleep(5)
         self.move_to_position(msg[0], msg[1], 0.45)
         time.sleep(8)
         self.move_to_position(msg[0], msg[1], 0.25)
         time.sleep(3)
-        self.gripper_value.data = 0.8
+        self.gripper_value.data = 0.2
         self.gripper_topic.publish(self.gripper_value)
-        # time.sleep(10)
+        time.sleep(5)
+        self.move_to_position(msg[0], msg[1], 0.45)
+        time.sleep(5)
+        self.position_topic.publish(self.retract)       
+
 
     def rob_celeb(self):
         # idk have the robot do something when it wins ?
