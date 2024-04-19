@@ -42,17 +42,23 @@ class Game(Node):
 
         self.b_cp = det_bord_cart(self.p1, self.p2)
 
-        # store location of cuboid location to pickup from
-        self.pp = [0.3, 0.425]
+
 
         # define resting pose
         self.retract = Pose()
-        self.retract.position.x = 0.45
-        self.retract.position.y = 0.0
-        self.retract.position.z = 0.4
+        self.retract.position.x = self.b_cp[4][0]
+        self.retract.position.y = self.b_cp[4][1]
+        self.retract.position.z = 0.45
         self.retract.orientation.x = math.pi
         self.retract.orientation.y = 0.0
         self.retract.orientation.z = 0.0
+
+        #define gripper open and close
+        self.gripper_open = Float32()
+        self.gripper_closed = Float32()
+        self.gripper_open.data =  0.0 
+        self.gripper_closed.data =  0.8
+
         # main game logic
 
         # det if shuman / ai go first
@@ -60,6 +66,7 @@ class Game(Node):
         self.playing = True
         print("1st")
         self.position_topic.publish(self.retract)
+        time.sleep(10)
         # Main loop
         while self.playing:
             print("2d")
@@ -105,7 +112,7 @@ class Game(Node):
         newMsg.orientation.y = 0.0
         newMsg.orientation.z = math.pi
         self.position_topic.publish(newMsg)
-        time.sleep(2)
+        time.sleep(10)
 
     def move_make(self, msg):
         # Determine using ai where to place
@@ -113,31 +120,56 @@ class Game(Node):
         # move to the board position
         # drop it
         # go back to retract
-        #
 
-        self.move_to_position(self.pp[0], self.pp[1], 0.45)
-        self.gripper_value.data = 0.0
-        self.gripper_topic.publish(self.gripper_value)
-        time.sleep(10)
-        self.move_to_position(self.pp[0], self.pp[1], 0.25)
-        time.sleep(10)
-        self.gripper_value.data = 0.8
-        self.gripper_topic.publish(self.gripper_value)
-        time.sleep(10)
-        self.move_to_position(self.pp[0], self.pp[1], 0.45)
+        #First - pickup block 
+        pp = [0.0,0.0]
+        pp[0] = float(input('x pos of pickup'))
+        pp[1] = float(input('y pos of pickup'))
+        #steps to pickup block :
+        # move above block 
+        # move down with gripper open 
+        # close gripper
+        # move up 
 
+        #move above the block 
+        self.move_to_position(pp[0], pp[1], 0.45)
+
+        #move down with gripper closed 
+        self.gripper_topic.publish(self.gripper_open)
+        self.move_to_position(pp[0], pp[1], 0.25)
+
+        #close gripper 
+        self.gripper_topic.publish(self.gripper_closed)
+        #move up 
+        self.move_to_position(pp[0], pp[1], 0.45)
+
+
+        #steps to move and drop block  :
+        #move to centeral resting position 
+        #move above the dropping point 
+        #move down a bit --SKIP?
+        #drop / open gripper 
+        #move above the dropping point
+        #move back to centeral
+
+        #move to ceneral position 
         self.position_topic.publish(self.retract)
-        time.sleep(5)
+
+        #move above dropping point
         self.move_to_position(msg[0], msg[1], 0.45)
-        time.sleep(8)
+
+        #move down a bit 
         self.move_to_position(msg[0], msg[1], 0.25)
-        time.sleep(3)
+
+        #open gripper 
         self.gripper_value.data = 0.0
         self.gripper_topic.publish(self.gripper_value)
-        time.sleep(5)
+        #move up
         self.move_to_position(msg[0], msg[1], 0.45)
-        time.sleep(5)
+
+        #move to rest 
         self.position_topic.publish(self.retract)
+ 
 
     def rob_celeb(self):
         # idk have the robot do something when it wins ?
