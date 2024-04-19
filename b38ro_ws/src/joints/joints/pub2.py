@@ -59,7 +59,7 @@ class MinimalPublisher(Node):
 
     def set_robot_state(self, msg: JointState):
         # set robot's joint config from message
-        # Since this message is published by low-level code on the arm driver,
+        # Since this message is published by the low-level code on the arm driver,
         # the order in which the joint values are published are is psuedo-random.
         # The name attribute of the msg contains an array in which these joints are published
         # Explanation: https://github.com/UniversalRobots/Universal_Robots_ROS_Driver/issues/619

@@ -43,10 +43,6 @@ function sysCall_init()
     objectSensor=sim.getObject('./attachProxSensor')
 
     attachedShape = 0
-
--- c) And just before opening the gripper again, detach the previously attached shape:
---
-    sim.setObjectParent(attachedShape,-1,true)
     
     jointArray = {jointR1, jointR2, jointL1, jointL2}
     open_angles = {0, 0, 0, 0}

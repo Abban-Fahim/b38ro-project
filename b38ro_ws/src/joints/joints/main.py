@@ -4,7 +4,7 @@ from rclpy.action import ActionClient
 from rclpy.node import Node
 from rclpy.time import Duration
 from geometry_msgs.msg import Pose
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Int32, Int32MultiArray
 import math
 import time
 
@@ -13,8 +13,7 @@ import time
 # import tttai.py as t
 # import waitformove.py as w
 from .move import det_bord_cart
-from .tttai import dec
-from .tttai import win
+from .tttai import dec, win
 
 # import firstmove.py as fm
 
@@ -23,26 +22,29 @@ class Game(Node):
     def __init__(self):
         super().__init__("game_logic")
 
-        # self.create_subscription(Joy, "/joy", self.controller_cb, 10)
-
-        # self.coords = det_bord_cart()
-
         self.position_topic = self.create_publisher(Pose, "/cart_pose", 10)
-        self.gripper_topic = self.create_publisher(Float32, "gripper_pose", 10)
+        self.gripper_topic = self.create_publisher(Float32, "/gripper_pose", 10)
         self.gripper_value = Float32()
 
-        # store board state 0=empty ,2=ai taken ,1=player taken
-        self.b_s = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.board_state_pub = self.create_publisher(
+            Int32MultiArray, "/board_state", 10
+        )
+        self.create_subscription(Int32, "/human_move", self.human_move_cb, 10)
+        # store board state 0 = empty, 2 = ai, 1 = player
+        self.board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         # store current player and winner if any
-        self.win = 0
+        win_state = 0
+        # store the last human move made
+        self.last_human_move = None
 
         # store board carteisan position and calculate cp of each point
-        self.p1 = [0.3, -0.15]  # future implement method to
-        self.p2 = [0.6, 0.15]  # find positions and calibrate with cp ,do in move.py
+        self.corner_1 = [0.3, -0.15]  # future implement method to
+        self.corner_2 = [
+            0.6,
+            0.15,
+        ]  # find positions and calibrate with cp ,do in move.py
 
-        self.b_cp = det_bord_cart(self.p1, self.p2)
-
-
+        self.board_positions = det_bord_cart(self.p1, self.p2)
 
         # define resting pose
         self.retract = Pose()
@@ -51,56 +53,72 @@ class Game(Node):
         self.retract.position.z = 0.45
         self.retract.orientation.x = math.pi
         self.retract.orientation.y = 0.0
-        self.retract.orientation.z = 0.0
+        self.retract.orientation.z = math.pi
 
-        #define gripper open and close
+        # define gripper open and close
         self.gripper_open = Float32()
         self.gripper_closed = Float32()
-        self.gripper_open.data =  0.0 
-        self.gripper_closed.data =  0.8
+        self.gripper_open.data = 0.0
+        self.gripper_closed.data = 0.8
 
         # main game logic
 
         # det if shuman / ai go first
-        self.turn = int(input("Who go first ,AI =2,HUMAN = 1"))
-        self.playing = True
+        self.turn = int(input("Who will go first (AI = 2, HUMAN = 1) "))
+        self.moves_num = 0
         print("1st")
         self.position_topic.publish(self.retract)
         time.sleep(10)
         # Main loop
-        while self.playing:
-            print("2d")
-            while self.win == 0:
-                print("3r")
+        while moves_num < 9:
+            while win_state == 0:
+                print("New move")
                 if self.turn == 2:
-                    print("4d")
-                    self.mov_to_make = dec(self.b_s)
-                    print("5d")
-                    self.move_make(self.b_cp[self.mov_to_make])
-                    print("6t")
-                    self.b_s[self.mov_to_make] = 2
-                    print("7t")
-                    if win(2, self.b_s):
-                        self.win = 2
+                    # Determine next move
+                    mov_to_make = dec(self.board_state)
+                    self.board_state[self.mov_to_make] = 2
+                    print("next move to make:", mov_to_make)
 
+                    # self.make_move(self.board_positions[mov_to_make])
+                    print("moving arm to place")
+
+                    # Check if robot wins
+                    if win(2, self.board_state):
+                        win_state = 2
+
+                    # Set next turn to human
                     self.turn = 1
+
                 elif self.turn == 1:
-                    print(self.b_s)
-                    self.b_s[int(input("What move was made"))] = 1
-                    if win(1, self.b_s):
-                        self.win = 1
+                    # Only if the human has made a move, change board state to reflect it
+                    move_made = False
+                    while not move_made:
+                        if self.board_state[self.last_human_move] == 0:
+                            self.board_state[self.last_human_move] = 1
+                            move_made = True
+
+                    # Check if human wins
+                    if win(1, self.board_state):
+                        win_state = 1
+
+                    # Set next turn to human
                     self.turn = 2
 
-            if self.win == 2:
-                self.rob_celeb()
+            moves_num += 1
+            msg = Int32MultiArray()
+            msg.data = self.board_state
+            self.board_state_pub.publish(msg)
 
-            elif self.win == 1:
+            if win_state == 2:
+                self.rob_celeb()
+            elif win_state == 1:
                 self.rob_rage()
 
-            if int(input("Press 1 after reseting the board to play again")):
-                self.b_s = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-                self.win = 0
-                self.turn = int(input("Who go first ,AI =2 ,HUMAN = 1"))
+        if win_state == 0:
+            print("GAME TIED :(")
+
+    def human_move_cb(self, msg: Int32):
+        self.last_human_move = msg.data
 
     def move_to_position(self, x, y, z):
         newMsg = Pose()
@@ -114,62 +132,60 @@ class Game(Node):
         self.position_topic.publish(newMsg)
         time.sleep(10)
 
-    def move_make(self, msg):
+    def make_move(self, msg):
         # Determine using ai where to place
         # pick up a block
         # move to the board position
         # drop it
         # go back to retract
 
-        #First - pickup block 
-        pp = [0.0,0.0]
-        pp[0] = float(input('x pos of pickup'))
-        pp[1] = float(input('y pos of pickup'))
-        #steps to pickup block :
-        # move above block 
-        # move down with gripper open 
+        # First - pickup block
+        pp = [0.0, 0.0]
+        pp[0] = float(input("x pos of pickup"))
+        pp[1] = float(input("y pos of pickup"))
+        # steps to pickup block :
+        # move above block
+        # move down with gripper open
         # close gripper
-        # move up 
+        # move up
 
-        #move above the block 
+        # move above the block
         self.move_to_position(pp[0], pp[1], 0.45)
 
-        #move down with gripper closed 
+        # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
         self.move_to_position(pp[0], pp[1], 0.25)
 
-        #close gripper 
+        # close gripper
         self.gripper_topic.publish(self.gripper_closed)
-        #move up 
+        # move up
         self.move_to_position(pp[0], pp[1], 0.45)
 
+        # steps to move and drop block  :
+        # move to centeral resting position
+        # move above the dropping point
+        # move down a bit --SKIP?
+        # drop / open gripper
+        # move above the dropping point
+        # move back to centeral
 
-        #steps to move and drop block  :
-        #move to centeral resting position 
-        #move above the dropping point 
-        #move down a bit --SKIP?
-        #drop / open gripper 
-        #move above the dropping point
-        #move back to centeral
-
-        #move to ceneral position 
+        # move to ceneral position
         self.position_topic.publish(self.retract)
 
-        #move above dropping point
+        # move above dropping point
         self.move_to_position(msg[0], msg[1], 0.45)
 
-        #move down a bit 
+        # move down a bit
         self.move_to_position(msg[0], msg[1], 0.25)
 
-        #open gripper 
+        # open gripper
         self.gripper_value.data = 0.0
         self.gripper_topic.publish(self.gripper_value)
-        #move up
+        # move up
         self.move_to_position(msg[0], msg[1], 0.45)
 
-        #move to rest 
+        # move to rest
         self.position_topic.publish(self.retract)
- 
 
     def rob_celeb(self):
         # idk have the robot do something when it wins ?
