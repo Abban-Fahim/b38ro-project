@@ -44,12 +44,12 @@ class Game(Node):
             0.15,
         ]  # find positions and calibrate with cp ,do in move.py
 
-        self.board_positions = det_bord_cart(self.p1, self.p2)
+        self.board_positions = det_bord_cart(self.corner_1, self.corner_2)
 
         # define resting pose
         self.retract = Pose()
-        self.retract.position.x = self.b_cp[4][0]
-        self.retract.position.y = self.b_cp[4][1]
+        self.retract.position.x = self.board_positions[4][0]
+        self.retract.position.y = self.board_positions[4][1]
         self.retract.position.z = 0.45
         self.retract.orientation.x = math.pi
         self.retract.orientation.y = 0.0
@@ -70,13 +70,13 @@ class Game(Node):
         self.position_topic.publish(self.retract)
         time.sleep(10)
         # Main loop
-        while moves_num < 9:
+        while self.moves_num < 9:
             while win_state == 0:
                 print("New move")
                 if self.turn == 2:
                     # Determine next move
                     mov_to_make = dec(self.board_state)
-                    self.board_state[self.mov_to_make] = 2
+                    self.board_state[mov_to_make] = 2
                     print("next move to make:", mov_to_make)
 
                     # self.make_move(self.board_positions[mov_to_make])
