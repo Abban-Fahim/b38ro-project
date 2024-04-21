@@ -33,7 +33,7 @@ class Game(Node):
         # store board state 0 = empty, 2 = ai, 1 = player
         self.board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         # store current player and winner if any
-        win_state = 0
+        self.win_state = 0
         # store the last human move made
         self.last_human_move = None
 
@@ -65,59 +65,76 @@ class Game(Node):
 
         # det if shuman / ai go first
         self.turn = int(input("Who will go first (AI = 2, HUMAN = 1) "))
-        self.moves_num = 0
+        self.moves_num = 1
         print("1st")
         self.position_topic.publish(self.retract)
-        time.sleep(10)
+        # time.sleep(10)
         # Main loop
-        while self.moves_num < 9:
-            while win_state == 0:
-                print("New move")
-                if self.turn == 2:
-                    # Determine next move
-                    mov_to_make = dec(self.board_state)
-                    self.board_state[mov_to_make] = 2
-                    print("next move to make:", mov_to_make)
 
-                    # self.make_move(self.board_positions[mov_to_make])
-                    print("moving arm to place")
+        self.game_looper = self.create_timer(
+            2,
+            lambda: (
+                self.game_loop() if self.moves_num <= 9 else print("GAME TIED :(")
+            ),
+        )
 
-                    # Check if robot wins
-                    if win(2, self.board_state):
-                        win_state = 2
+    def game_loop(self):
+        print("Move #", self.moves_num)
+        check_for_input_again = True
+        if self.turn == 2:
+            print("Robot move")
+            check_for_input_again = False
+            # Determine next move
+            mov_to_make = dec(self.board_state)
+            self.board_state[mov_to_make] = 2
+            print("next move to make:", mov_to_make)
 
-                    # Set next turn to human
-                    self.turn = 1
+            # self.make_move(self.board_positions[mov_to_make])
+            print("moving arm to place")
 
-                elif self.turn == 1:
-                    # Only if the human has made a move, change board state to reflect it
-                    move_made = False
-                    while not move_made:
-                        if self.board_state[self.last_human_move] == 0:
-                            self.board_state[self.last_human_move] = 1
-                            move_made = True
+            # Check if robot wins
+            if win(2, self.board_state):
+                self.win_state = 2
+
+            # Set next turn to human
+            self.turn = 1
+
+        elif self.turn == 1:
+            print("Human move")
+            # Only if the human has made a move, change board state to reflect it
+            if not (self.last_human_move == None):
+                print("Human move", self.last_human_move)
+                if self.board_state[self.last_human_move] == 0:
+                    check_for_input_again = False
+                    # Update board for human move
+                    self.board_state[self.last_human_move] = 1
 
                     # Check if human wins
                     if win(1, self.board_state):
-                        win_state = 1
+                        self.win_state = 1
 
-                    # Set next turn to human
+                    # Set next turn to robot
                     self.turn = 2
+                else:
+                    print("illegal move, cant place on filled square")
+            else:
+                print("no move recieved")
 
-            moves_num += 1
+        # Increment the moves made and publish new board state
+        if not check_for_input_again:
+            self.moves_num += 1
             msg = Int32MultiArray()
             msg.data = self.board_state
             self.board_state_pub.publish(msg)
 
-            if win_state == 2:
-                self.rob_celeb()
-            elif win_state == 1:
-                self.rob_rage()
-
-        if win_state == 0:
-            print("GAME TIED :(")
+        # Check for win states
+        if self.win_state == 2:
+            self.rob_celeb()
+        elif self.win_state == 1:
+            self.rob_rage()
 
     def human_move_cb(self, msg: Int32):
+        print("================== AGGHHH ================", str(self.last_human_move))
         self.last_human_move = msg.data
 
     def move_to_position(self, x, y, z):
