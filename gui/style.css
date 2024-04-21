@@ -37,13 +37,13 @@ main{
     display: grid;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-columns: 1fr 1fr 1fr;
-    width: 450px;
-    height: 450px;
+    width: 400px;
+    height: 400px;
     margin: 0 auto;
 }
 
 #grid div {
-    font-size: 145px;
+    font-size: 120px;
     text-align: center;
     place-self: center;
     border: var(--base07) solid 2px;

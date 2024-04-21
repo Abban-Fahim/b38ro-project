@@ -22,6 +22,12 @@ const robot_position = new ROSLIB.Topic({
 const robot_jacobian = new ROSLIB.Topic({
     ros, name: "/robot_jacobian", messageType: "std_msgs/Float32MultiArray"
 });
+const human_move_pub = new ROSLIB.Topic({
+    ros, name: "/human_move", messageType: "std_msgs/Int32"
+})
+const board_position_sub = new ROSLIB.Topic({
+    ros, name: "/board_state", messageType: "std_msgs/Int32MultiArray"
+})
 
 let global_joint_angles = [0, 0, 0, 0, 0, 0];
 let global_joint_velocities = [0, 0, 0, 0, 0, 0];
@@ -87,6 +93,21 @@ pos_z = document.getElementById("pos_z");
 function updateLabels(el) {
     document.getElementById(el.id.replace("pos","label")).innerHTML = el.value;
 }
+
+let boardElements = [];
+for (let i = 0; i < 9; i++) {
+    let el = document.getElementById(i.toString());
+    el.addEventListener("click", ()=>{
+        human_move_pub.publish({data: i});
+    });
+    boardElements.push(el);
+}
+board_position_sub.subscribe((msg)=>{
+    for (let i = 0; i < msg.data.length; i++) {
+        let data = msg.data[i] == 1 ? "x" : (msg.data[i] == 2 ? "o": " ");
+        boardElements[i].innerHTML = data;
+    }
+})
 
 
 document.getElementById("move").onclick = (e) => {
