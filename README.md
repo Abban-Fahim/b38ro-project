@@ -89,8 +89,14 @@ To start the real robot, run
 ```bash
 ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_type:=gen3_lite gripper:=gen3_lite_2f robot_ip:=192.168.1.10 use_fake_hardware:=False
 ```
+
+To move to a cartesian position:
+
+```bash
+ros2 topic pub /cart_pose geometry_msgs/msg/Pose "{position:{x: 0.3, y: 0.425, z: 0.3}, orientation: {x: 3.142, y: 0, z: 3.142}}" -1
+```
  
-To send joint commands, 
+To send joint commands,
  
 ```bash
   ros2 topic pub /joint_trajectory_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{  joint_names: [joint_1, joint_2, joint_3, joint_4, joint_5, joint_6],

@@ -81,6 +81,7 @@ class Game(Node):
     def game_loop(self):
         print("Move #", self.moves_num)
         check_for_input_again = True
+
         if self.turn == 2:
             print("Robot move")
             check_for_input_again = False
@@ -89,7 +90,7 @@ class Game(Node):
             self.board_state[mov_to_make] = 2
             print("next move to make:", mov_to_make)
 
-            # self.make_move(self.board_positions[mov_to_make])
+            self.make_move(self.board_positions[mov_to_make])
             print("moving arm to place")
 
             # Check if robot wins
@@ -134,7 +135,6 @@ class Game(Node):
             self.rob_rage()
 
     def human_move_cb(self, msg: Int32):
-        print("================== AGGHHH ================", str(self.last_human_move))
         self.last_human_move = msg.data
 
     def move_to_position(self, x, y, z):
@@ -145,7 +145,7 @@ class Game(Node):
 
         newMsg.orientation.x = math.pi
         newMsg.orientation.y = 0.0
-        newMsg.orientation.z = math.pi
+        newMsg.orientation.z = math.pi / 2
         self.position_topic.publish(newMsg)
         time.sleep(10)
 
@@ -157,9 +157,11 @@ class Game(Node):
         # go back to retract
 
         # First - pickup block
-        pp = [0.0, 0.0]
-        pp[0] = float(input("x pos of pickup"))
-        pp[1] = float(input("y pos of pickup"))
+        # X is constant value since blocks are in a line
+        # Y values increment by 0.1 each time, do depending
+        # on game state we pick up the blocks (y=0.1*n-0.5)
+        pp = [-0.15, -0.1 * self.moves_num + 0.5]
+
         # steps to pickup block :
         # move above block
         # move down with gripper open
@@ -168,10 +170,12 @@ class Game(Node):
 
         # move above the block
         self.move_to_position(pp[0], pp[1], 0.45)
+        time.sleep(8)
 
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
         self.move_to_position(pp[0], pp[1], 0.25)
+        time.sleep(2)
 
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
@@ -188,12 +192,15 @@ class Game(Node):
 
         # move to ceneral position
         self.position_topic.publish(self.retract)
+        time.sleep(8)
 
         # move above dropping point
         self.move_to_position(msg[0], msg[1], 0.45)
+        time.sleep(5)
 
         # move down a bit
         self.move_to_position(msg[0], msg[1], 0.25)
+        time.sleep(2)
 
         # open gripper
         self.gripper_value.data = 0.0
