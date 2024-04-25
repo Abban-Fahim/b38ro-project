@@ -2,6 +2,7 @@
 
 function movCallback(config,vel,accel,handles)
     for i=1,#handles,1 do
+
         if sim.isDynamicallyEnabled(handles[i]) then
             sim.setJointTargetPosition(handles[i],config[i])
         else    
