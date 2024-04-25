@@ -38,10 +38,10 @@ class Game(Node):
         self.last_human_move = None
 
         # store board carteisan position and calculate cp of each point
-        self.corner_1 = [0.3, -0.15]  # future implement method to
+        self.corner_1 = [0.475, 0.05]  # future implement method to
         self.corner_2 = [
-            0.6,
-            0.15,
+            0.175,
+            -0.25,
         ]  # find positions and calibrate with cp ,do in move.py
 
         self.board_positions = det_bord_cart(self.corner_1, self.corner_2)
