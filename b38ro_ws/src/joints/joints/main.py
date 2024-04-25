@@ -48,10 +48,10 @@ class Game(Node):
 
         # define resting pose
         self.retract = Pose()
-        self.retract.position.x = self.board_positions[4][0]
-        self.retract.position.y = self.board_positions[4][1]
-        self.retract.position.z = 0.45
-        self.retract.orientation.x = math.pi
+        self.retract.position.x = 0.0
+        self.retract.position.y = 0.0
+        self.retract.position.z = 1.0
+        self.retract.orientation.x = 0.0
         self.retract.orientation.y = 0.0
         self.retract.orientation.z = math.pi
 
