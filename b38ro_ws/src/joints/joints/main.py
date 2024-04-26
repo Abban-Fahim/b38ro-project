@@ -38,10 +38,10 @@ class Game(Node):
         self.last_human_move = None
 
         # store board carteisan position and calculate cp of each point
-        self.corner_1 = [0.475, 0.05]  # future implement method to
+        self.corner_1 = [0.425, 0.125]  # future implement method to
         self.corner_2 = [
-            0.175,
-            -0.25,
+            0.150,
+            -0.150,
         ]  # find positions and calibrate with cp ,do in move.py
 
         self.board_positions = det_bord_cart(self.corner_1, self.corner_2)
@@ -147,7 +147,7 @@ class Game(Node):
         newMsg.orientation.y = 0.0
         newMsg.orientation.z = math.pi / 2
         self.position_topic.publish(newMsg)
-        time.sleep(10)
+        time.sleep(5)
 
     def make_move(self, msg):
         # Determine using ai where to place
@@ -160,7 +160,7 @@ class Game(Node):
         # X is constant value since blocks are in a line
         # Y values increment by 0.1 each time, do depending
         # on game state we pick up the blocks (y=0.1*n-0.5)
-        pp = [-0.15, -0.1 * self.moves_num + 0.5]
+        pp = [0.125,0.4]
 
         # steps to pickup block :
         # move above block
@@ -170,12 +170,11 @@ class Game(Node):
 
         # move above the block
         self.move_to_position(pp[0], pp[1], 0.45)
-        time.sleep(8)
+
 
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
         self.move_to_position(pp[0], pp[1], 0.25)
-        time.sleep(2)
 
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
@@ -192,15 +191,15 @@ class Game(Node):
 
         # move to ceneral position
         self.position_topic.publish(self.retract)
-        time.sleep(8)
+
 
         # move above dropping point
         self.move_to_position(msg[0], msg[1], 0.45)
-        time.sleep(5)
+
 
         # move down a bit
         self.move_to_position(msg[0], msg[1], 0.25)
-        time.sleep(2)
+
 
         # open gripper
         self.gripper_value.data = 0.0
