@@ -1,3 +1,4 @@
+
 # import ROS
 import rclpy
 from rclpy.action import ActionClient
@@ -5,8 +6,11 @@ from rclpy.node import Node
 from rclpy.time import Duration
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Float32, Int32, Int32MultiArray
+
+#import standard libraries 
 import math
 import time
+import numpy 
 
 # import libs
 # import picplace.py as p
@@ -137,7 +141,7 @@ class Game(Node):
     def human_move_cb(self, msg: Int32):
         self.last_human_move = msg.data
 
-    def move_to_position(self, x, y, z):
+    def move_to_position(self, x, y, z ,tots):
         newMsg = Pose()
         newMsg.position.x = x
         newMsg.position.y = y
@@ -147,7 +151,15 @@ class Game(Node):
         newMsg.orientation.y = 0.0
         newMsg.orientation.z = math.pi / 2
         self.position_topic.publish(newMsg)
-        time.sleep(15)
+        time.sleep(tots)
+
+    def move_to_position_split(self,org ,x, y, z ,steps,tots):
+
+        o2t_s = numpy.linspace(org,[x,y,z],steps)
+
+        for x in o2t_s:
+            self.move_to_position(x[0],x[1],x[2],tots/steps)
+            
 
     def make_move(self, msg):
         # Determine using ai where to place
@@ -169,17 +181,19 @@ class Game(Node):
         # move up
 
         # move above the block
-        self.move_to_position(pp[0], pp[1], 0.45)
+        self.move_to_position(pp[0], pp[1], 0.45,10)
+        tem = [pp[0],pp[1],0.45]
 
 
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
-        self.move_to_position(pp[0], pp[1], 0.25)
-
+        self.move_to_position_split(tem,pp[0], pp[1], 0.25,10,30)
+        tem = [pp[0],pp[1],0.25]
+        
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
         # move up
-        self.move_to_position(pp[0], pp[1], 0.45)
+        self.move_to_position_split(tem,pp[0], pp[1], 0.45,10,30)
 
         # steps to move and drop block  :
         # move to centeral resting position
@@ -190,23 +204,23 @@ class Game(Node):
         # move back to centeral
 
         # move to ceneral position
-        self.position_topic.publish(self.retract)
-        time.sleep(10)
+        self.move_to_position(0.25,0.3,0.7,10)
+        
 
         # move above dropping point
-        self.move_to_position(msg[0], msg[1], 0.45)
-
+        self.move_to_position(msg[0], msg[1], 0.45,10)
+        tem = [msg[0],msg[1],0.45]
 
         # move down a bit
-        self.move_to_position(msg[0], msg[1], 0.3)
-
+        self.move_to_position_split(tem,msg[0], msg[1], 0.3,10,30)
+        tem = [msg[0],msg[1],0.3]
 
         # open gripper
         self.gripper_value.data = 0.0
         self.gripper_topic.publish(self.gripper_value)
         time.sleep(2)
         # move up
-        self.move_to_position(msg[0], msg[1], 0.45)
+        self.move_to_position_split(tem,msg[0], msg[1], 0.45,10,30)
 
         # move to rest
         self.position_topic.publish(self.retract)

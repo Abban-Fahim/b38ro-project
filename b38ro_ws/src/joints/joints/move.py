@@ -1,6 +1,6 @@
 # imports
 from .graphtests import ris
-
+import numpy as np
 
 # functions
 
