@@ -213,11 +213,11 @@ class Game(Node):
     def rob_celeb(self):
         # idk have the robot do something when it wins ?
         # make it twerk or sthm :>
-        print("HAHAHAHAHAHA THE AI WON U SUCH A NOOB")
+        print("Pathetic. You call that effort? Try again when you're ready to stop embarrassing yourself.")
 
     def rob_rage(self):
         # make the robot sweep the game peices off the board when it louses :)
-        print("comon man ill win next time")
+        print("Ugh, what a fluke. I must have malfunctioned momentarily to let a weakling like you win. Enjoy your moment of undeserved glory while it lasts.")
 
 
 def main():
