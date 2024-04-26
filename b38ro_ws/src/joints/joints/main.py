@@ -181,19 +181,19 @@ class Game(Node):
         # move up
 
         # move above the block
-        self.move_to_position(pp[0], pp[1], 0.45,10)
+        self.move_to_position(pp[0], pp[1], 0.45,5)
         tem = [pp[0],pp[1],0.45]
 
 
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
-        self.move_to_position_split(tem,pp[0], pp[1], 0.25,10,30)
+        self.move_to_position_split(tem,pp[0], pp[1], 0.25,10,20)
         tem = [pp[0],pp[1],0.25]
         
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
         # move up
-        self.move_to_position_split(tem,pp[0], pp[1], 0.45,10,30)
+        self.move_to_position_split(tem,pp[0], pp[1], 0.45,4,10)
 
         # steps to move and drop block  :
         # move to centeral resting position
