@@ -147,7 +147,7 @@ class Game(Node):
         newMsg.orientation.y = 0.0
         newMsg.orientation.z = math.pi / 2
         self.position_topic.publish(newMsg)
-        time.sleep(5)
+        time.sleep(15)
 
     def make_move(self, msg):
         # Determine using ai where to place
@@ -191,19 +191,20 @@ class Game(Node):
 
         # move to ceneral position
         self.position_topic.publish(self.retract)
-
+        time.sleep(10)
 
         # move above dropping point
         self.move_to_position(msg[0], msg[1], 0.45)
 
 
         # move down a bit
-        self.move_to_position(msg[0], msg[1], 0.25)
+        self.move_to_position(msg[0], msg[1], 0.3)
 
 
         # open gripper
         self.gripper_value.data = 0.0
         self.gripper_topic.publish(self.gripper_value)
+        time.sleep(2)
         # move up
         self.move_to_position(msg[0], msg[1], 0.45)
 
