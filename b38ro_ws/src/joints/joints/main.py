@@ -41,10 +41,8 @@ class Game(Node):
         #self.start_sim = self.create_publisher(Bool,"/startSimulaion",10)
         #self.stop_sim = self.create_publisher(Bool,"/stopSimulation",10)
         #temT = Bool()
-        #temF = Bool()
         #temT.data = True
-        #temF.data = False
-        #if self.sim_state == 1 :
+        #if self.sim_state.data == 1 :
         #    self.stop_sim.publish(temF)
         #    time.sleep(2)
         #    self.start_sim.publish(temT)
@@ -220,7 +218,7 @@ class Game(Node):
         # X is constant value since blocks are in a line
         # Y values increment by 0.1 each time, do depending
         # on game state we pick up the blocks (y=0.1*n-0.5)
-        pp = [[0.125, 0.4, 0.05], [0, 0.4, 0.05], [-0.125, 0.4, 0.05], [0.125, -0.4, 0.05], [0, -0.4, 0.05], [-0.125, -0.4, 0.05]]
+        pp = [[-0.125, 0.4, 0.05],[0.125, 0.4, 0.05], [0.0, 0.4, 0.05],  [0.125, -0.4, 0.05], [0.0, -0.4, 0.05], [-0.125, -0.4, 0.05]]
 
         # steps to pickup block :
         # move above block
@@ -229,17 +227,17 @@ class Game(Node):
         # move up
 
         # move above the block
-        self.move_to_position([pp[self.moves_numai][0],pp[self.moves_numai][1] , 0.45],5)
+        self.move_to_position([pp[self.moves_numai][0],pp[self.moves_numai][1] , 0.45],10)
 
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
-        self.move_to_position_split([pp[self.moves_numai][0], pp[self.moves_numai][1], 0.25],10,20)
+        self.move_to_position_split([pp[self.moves_numai][0], pp[self.moves_numai][1], 0.25],7,15)
  
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
         # move up
-        self.move_to_position_split([pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45],4,10)
-
+        self.move_to_position_split([pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45],2,5)
+        self.moves_numai = self.moves_numai +1
         # steps to move and drop block  :
         # move to centeral resting position
         # move above the dropping point
@@ -249,20 +247,20 @@ class Game(Node):
         # move back to centeral
 
         # move to ceneral position
-        self.move_to_position([0.25,0.3,0.7],10)
+        self.move_to_position([0.25,0.3,0.7],10)#NEEDS A SPLIT CURVE 
         
         # move above dropping point
         self.move_to_position([msg[0], msg[1], 0.45],10)
 
         # move down a bit
-        self.move_to_position_split([msg[0], msg[1], 0.3],10,30)
+        self.move_to_position_split([msg[0], msg[1], 0.255],10,20)
 
         # open gripper
         self.gripper_topic.publish(self.gripper_open)
         time.sleep(2)
 
         # move up
-        self.move_to_position_split(msg[0], msg[1], 0.45,10,30)
+        self.move_to_position_split([msg[0], msg[1], 0.45],5,10)
 
         # move to rest
         self.position_topic.publish(self.retract)
