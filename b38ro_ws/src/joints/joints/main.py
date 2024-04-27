@@ -5,7 +5,7 @@ from rclpy.action import ActionClient
 from rclpy.node import Node
 from rclpy.time import Duration
 from geometry_msgs.msg import Pose
-from std_msgs.msg import Float32, Int32, Int32MultiArray
+from std_msgs.msg import Float32, Int32, Int32MultiArray, Bool
 
 #import standard libraries 
 import math
@@ -34,6 +34,24 @@ class Game(Node):
             Int32MultiArray, "/board_state", 10
         )
         self.create_subscription(Int32, "/human_move", self.human_move_cb, 10)
+
+        #restart copelia sim if its already running
+
+        #self.create_subscription(Int32 , "/simulationState", self.sim_state,10)
+        #self.start_sim = self.create_publisher(Bool,"/startSimulaion",10)
+        #self.stop_sim = self.create_publisher(Bool,"/stopSimulation",10)
+        #temT = Bool()
+        #temF = Bool()
+        #temT.data = True
+        #temF.data = False
+        #if self.sim_state == 1 :
+        #    self.stop_sim.publish(temF)
+        #    time.sleep(2)
+        #    self.start_sim.publish(temT)
+        #else :
+        #    self.start_sim.publish(temT)
+
+            
         # store board state 0 = empty, 2 = ai, 1 = player
         self.board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         # store current player and winner if any
@@ -231,7 +249,7 @@ class Game(Node):
         # move back to centeral
 
         # move to ceneral position
-        self.move_to_position(0.25,0.3,0.7,10)
+        self.move_to_position([0.25,0.3,0.7],10)
         
         # move above dropping point
         self.move_to_position([msg[0], msg[1], 0.45],10)
