@@ -50,7 +50,7 @@ class Game(Node):
 
         self.board_positions = det_bord_cart(self.corner_1, self.corner_2)
 
-        #var to store current position for curved movement
+        #var to store current position for split movement
         self.cur_pos = [0,0,0]
         
         # define resting pose
@@ -67,6 +67,9 @@ class Game(Node):
         self.gripper_closed = Float32()
         self.gripper_open.data = 0.0
         self.gripper_closed.data = 0.8
+
+        # store amount of moves made by ai
+        self.moves_numai = 0
 
         # main game logic
 
@@ -199,7 +202,7 @@ class Game(Node):
         # X is constant value since blocks are in a line
         # Y values increment by 0.1 each time, do depending
         # on game state we pick up the blocks (y=0.1*n-0.5)
-        pp = [0.125,0.4]
+        pp = [[0.125, 0.4, 0.05], [0, 0.4, 0.05], [-0.125, 0.4, 0.05], [0.125, -0.4, 0.05], [0, -0.4, 0.05], [-0.125, -0.4, 0.05]]
 
         # steps to pickup block :
         # move above block
@@ -208,16 +211,16 @@ class Game(Node):
         # move up
 
         # move above the block
-        self.move_to_position([pp[0], pp[1], 0.45],5)
+        self.move_to_position([pp[self.moves_numai][0],pp[self.moves_numai][1] , 0.45],5)
 
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
-        self.move_to_position_split([pp[0], pp[1], 0.25],10,20)
+        self.move_to_position_split([pp[self.moves_numai][0], pp[self.moves_numai][1], 0.25],10,20)
  
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
         # move up
-        self.move_to_position_split([pp[0], pp[1], 0.45],4,10)
+        self.move_to_position_split([pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45],4,10)
 
         # steps to move and drop block  :
         # move to centeral resting position
