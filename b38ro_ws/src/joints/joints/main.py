@@ -157,6 +157,29 @@ class Game(Node):
         time.sleep(tots)
         self.cur_pos = tar
 
+    #     def bezier_curve(self,org, P1, xyz, t):
+    #     xb = (1 - t) ** 2 * org[0] + 2 * (1 - t) * t * P1[0] + t ** 2 * xyz[0]
+    #     yb = (1 - t) ** 2 * org[1] + 2 * (1 - t) * t * P1[1] + t ** 2 * xyz[1]
+    #     zb = (1 - t) ** 2 * org[2] + 2 * (1 - t) * t * P1[2] + t ** 2 * xyz[2]
+    #     return xb, yb, zb
+    
+    # def generate_curve_points(self,org, P1, xyz, step=0.1):
+    #     points = []
+    #     t = 0
+    #     while t <= 1:
+    #         points.append(self.bezier_curve(org, P1, xyz, t))
+    #         t += step
+    #     return points
+        
+    # def move_to_position_split(self,org ,x, y, z ,steps,tots):
+    #     # initial_pose = [org[0], org[1], org[2]]
+    #     # final_pose = [x, y, z]
+    #     # intermediate_pose = [(org[0]+x)/2, (org[1]+y)/2, (org[2]+z)/2 + 0.6]
+    #     points = self.generate_curve_points(org, [(org[0]+x)/2, (org[1]+y)/2, (org[2]+z)/2], [x, y, z])  # Generate curve points
+    #     step_size = len(points) // steps  # Calculate step size
+    #     for i in range(0, len(points), step_size):
+    #         self.move_to_position(points[i][0], points[i][1], points[i][2], tots/steps)
+            
     def move_to_position_split(self,tar ,steps,tots):
 
         o2t_s = numpy.linspace(self.cur_pos,tar,steps)
