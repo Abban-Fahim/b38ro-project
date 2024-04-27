@@ -50,6 +50,9 @@ class Game(Node):
 
         self.board_positions = det_bord_cart(self.corner_1, self.corner_2)
 
+        #var to store current position for curved movement
+        self.cur_pos = [0,0,0]
+        
         # define resting pose
         self.retract = Pose()
         self.retract.position.x = 0.0
@@ -141,24 +144,25 @@ class Game(Node):
     def human_move_cb(self, msg: Int32):
         self.last_human_move = msg.data
 
-    def move_to_position(self, x, y, z ,tots):
+    def move_to_position(self, tar,tots):
         newMsg = Pose()
-        newMsg.position.x = x
-        newMsg.position.y = y
-        newMsg.position.z = z
+        newMsg.position.x = tar[0]
+        newMsg.position.y = tar[1]
+        newMsg.position.z = tar[2]
 
         newMsg.orientation.x = math.pi
         newMsg.orientation.y = 0.0
         newMsg.orientation.z = math.pi / 2
         self.position_topic.publish(newMsg)
         time.sleep(tots)
+        self.cur_pos = tar
 
-    def move_to_position_split(self,org ,x, y, z ,steps,tots):
+    def move_to_position_split(self,tar ,steps,tots):
 
-        o2t_s = numpy.linspace(org,[x,y,z],steps)
-
+        o2t_s = numpy.linspace(self.cur_pos,tar,steps)
+        
         for x in o2t_s:
-            self.move_to_position(x[0],x[1],x[2],tots/steps)
+            self.move_to_position(x,tots/steps)
             
 
     def make_move(self, msg):
@@ -181,19 +185,16 @@ class Game(Node):
         # move up
 
         # move above the block
-        self.move_to_position(pp[0], pp[1], 0.45,5)
-        tem = [pp[0],pp[1],0.45]
-
+        self.move_to_position([pp[0], pp[1], 0.45],5)
 
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
-        self.move_to_position_split(tem,pp[0], pp[1], 0.25,10,20)
-        tem = [pp[0],pp[1],0.25]
-        
+        self.move_to_position_split([pp[0], pp[1], 0.25],10,20)
+ 
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
         # move up
-        self.move_to_position_split(tem,pp[0], pp[1], 0.45,4,10)
+        self.move_to_position_split([pp[0], pp[1], 0.45],4,10)
 
         # steps to move and drop block  :
         # move to centeral resting position
@@ -206,21 +207,18 @@ class Game(Node):
         # move to ceneral position
         self.move_to_position(0.25,0.3,0.7,10)
         
-
         # move above dropping point
-        self.move_to_position(msg[0], msg[1], 0.45,10)
-        tem = [msg[0],msg[1],0.45]
+        self.move_to_position([msg[0], msg[1], 0.45],10)
 
         # move down a bit
-        self.move_to_position_split(tem,msg[0], msg[1], 0.3,10,30)
-        tem = [msg[0],msg[1],0.3]
+        self.move_to_position_split([msg[0], msg[1], 0.3],10,30)
 
         # open gripper
-        self.gripper_value.data = 0.0
-        self.gripper_topic.publish(self.gripper_value)
+        self.gripper_topic.publish(self.gripper_open)
         time.sleep(2)
+
         # move up
-        self.move_to_position_split(tem,msg[0], msg[1], 0.45,10,30)
+        self.move_to_position_split(msg[0], msg[1], 0.45,10,30)
 
         # move to rest
         self.position_topic.publish(self.retract)
