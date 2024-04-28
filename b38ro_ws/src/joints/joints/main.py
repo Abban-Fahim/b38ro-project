@@ -35,20 +35,20 @@ class Game(Node):
         )
         self.create_subscription(Int32, "/human_move", self.human_move_cb, 10)
 
-        #restart copelia sim if its already running
+        #restart copelia sim 
 
-        #self.create_subscription(Int32 , "/simulationState", self.sim_state,10)
-        #self.start_sim = self.create_publisher(Bool,"/startSimulaion",10)
-        #self.stop_sim = self.create_publisher(Bool,"/stopSimulation",10)
-        #temT = Bool()
-        #temT.data = True
-        #if self.sim_state.data == 1 :
-        #    self.stop_sim.publish(temF)
-        #    time.sleep(2)
-        #    self.start_sim.publish(temT)
-        #else :
-        #    self.start_sim.publish(temT)
+        self.start_sim = self.create_publisher(Bool,"/startSimulaion",10)
+        self.stop_sim = self.create_publisher(Bool,"/stopSimulation",10)
+        self.temT = Bool()
+        self.temT.data =False
+        
 
+        print("tt")
+        self.stop_sim.publish(self.temT)
+        print("t")
+        time.sleep(2)
+        self.start_sim.publish(self.temT)
+        print("f")
             
         # store board state 0 = empty, 2 = ai, 1 = player
         self.board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -159,6 +159,9 @@ class Game(Node):
             self.rob_celeb()
         elif self.win_state == 1:
             self.rob_rage()
+
+    def sim_state(self,msg: Int32):
+        self.simm_state = msg.data
 
     def human_move_cb(self, msg: Int32):
         self.last_human_move = msg.data
