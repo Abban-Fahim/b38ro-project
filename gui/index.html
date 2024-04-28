@@ -15,11 +15,12 @@
     <title>B38RO Project</title>
 </head>
 <body>
-    <h1>Dashboard<h1>
-    <button id="round-toggle">Toggle value accuracy</button>
+    <h1>
+        Dashboard    
+        <button id="round-toggle">Toggle value accuracy</button>
+    </h1>
     <main>
         <div>
-
             <h2>Move arm to cartesian position:</h2>
             <div id="pos_control">
                 x: <label id="label_x"></label>
@@ -29,17 +30,6 @@
                 z: <label id="label_z"></label>
                 <input type="range" id="pos_z" max="2" min="0.1" step="0.1" value="0.5">
                 <button id="move">Move</button>
-            </div>
-            
-            <div class="charts">
-                <div style="position: relative; height:20vh; width:40vw">
-                    <p id="arm_pos"></p>
-                    <canvas id="arm_pos_canvas"></canvas>
-                </div>
-                <div style="position: relative; height:20vh; width:40vw">
-                    <p id="arm_rot"></p>
-                    <canvas id="arm_rot_canvas"></canvas>
-                </div>
             </div>
             
             <h2>Robot jacobian</h2>
@@ -69,6 +59,17 @@
             <div id="8"> </div>
         </div>
     </main>
+
+    <div class="charts">
+        <div style="position: relative; height:20vh; width:40vw">
+            <p id="arm_pos"></p>
+            <canvas id="arm_pos_canvas"></canvas>
+        </div>
+        <div style="position: relative; height:20vh; width:40vw">
+            <p id="arm_rot"></p>
+            <canvas id="arm_rot_canvas"></canvas>
+        </div>
+    </div>
     
     <div class="charts">
         <div style="position: relative; height:20vh; width:40vw">

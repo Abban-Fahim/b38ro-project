@@ -65,8 +65,8 @@ robot_position.subscribe((msg)=>{
     ({z, y, x} = msg.orientation);
     eef_tf.angles = {x, y, z};
     // console.log(eef_tf)
-    arm_pos_display.innerHTML = `Cartesian position: X: ${contextRound(eef_tf.pos.x)}, Y: ${contextRound(eef_tf.pos.y)}, Z: ${contextRound(eef_tf.pos.z)}`;
-    arm_rot_display.innerHTML = `Euler angles: Z: ${contextRound(eef_tf.angles.z)}, Y: ${contextRound(eef_tf.pos.y)}, X: ${contextRound(eef_tf.angles.x)}`;
+    arm_pos_display.innerHTML = `<h2>Cartesian position:</h2> X: ${contextRound(eef_tf.pos.x)}, Y: ${contextRound(eef_tf.pos.y)}, Z: ${contextRound(eef_tf.pos.z)}`;
+    arm_rot_display.innerHTML = `<h2>Euler angles: Z:</h2> ${contextRound(eef_tf.angles.z)}, Y: ${contextRound(eef_tf.pos.y)}, X: ${contextRound(eef_tf.angles.x)}`;
 
 })
 
