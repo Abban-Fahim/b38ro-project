@@ -1,12 +1,14 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32, Float32MultiArray
+from std_msgs.msg import Float32, Float32MultiArray, Bool
 from geometry_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 from rclpy.action import ActionClient
 from control_msgs.action import GripperCommand
+from controller_manager.controller_manager_services import SwitchController
+from example_interfaces.srv import Trigger
 
 from pykin.robots.single_arm import SingleArm
 from pykin.kinematics.transform import (
@@ -39,6 +41,13 @@ class MinimalPublisher(Node):
         # Action client for moving the gripper
         self.gripper_client = ActionClient(
             self, GripperCommand, "robotiq_gripper_controller/gripper_cmd"
+        )
+
+        # Action clients for restting the arm in case of a fault
+        self.create_subscription(Bool, "reset_arm", self.reset_arm, 10)
+        self.reset_fault = ActionClient(self, Trigger, "fault_controller/reset_fault")
+        self.controller_switcher = ActionClient(
+            self, SwitchController, "controller_manager/switch_controller"
         )
 
         # receive Cartesian poses to move to
@@ -139,6 +148,27 @@ class MinimalPublisher(Node):
         gripper_msg.command.max_effort = 100.0
         print(gripper_msg)
         self.gripper_client.send_goal_async(gripper_msg)
+
+    def reset_arm(self, msg: Bool):
+        # Deactiavte controllers
+        switch_command = SwitchController.Request()
+        switch_command.deactivate_controllers = [
+            "robotiq_gripper_controller",
+            "joint_trajectory_controller",
+        ]
+        self.controller_switcher.send_goal_async(switch_command)
+
+        # Reset the fault controller
+        fault_command = Trigger.Request()
+        self.reset_fault.send_goal_async(fault_command)
+
+        # Activate controllers
+        switch_command.deactivate_controllers = []
+        switch_command.activate_controllers = [
+            "robotiq_gripper_controller",
+            "joint_trajectory_controller",
+        ]
+        self.controller_switcher.send_goal_async(switch_command)
 
 
 def main():

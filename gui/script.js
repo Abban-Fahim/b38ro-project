@@ -115,7 +115,7 @@ document.getElementById("move").onclick = (e) => {
     let y = Number(pos_y.value);
     let z = Number(pos_z.value);
     // Send input cartesian coordinates and euler angles denoting pointing down
-    cartesian_pos.publish({position: {x, y, z}, orientation: {x:Math.PI, y:0, z:0}})
+    cartesian_pos.publish({position: {x, y, z}, orientation: {x:0, y:0, z:0}})
 }
 
 const new_chart = (array, elID, axesLabel) => new Chart(document.getElementById(elID), {

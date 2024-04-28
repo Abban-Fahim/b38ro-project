@@ -87,7 +87,7 @@ ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_t
 To start the real robot, run 
  
 ```bash
-ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_type:=gen3_lite gripper:=gen3_lite_2f robot_ip:=192.168.1.10 use_fake_hardware:=False
+ros2 launch kinova_gen3_6dof_robotiq_2f_85_moveit_config robot.launch.py robot_model:=gen3_lite gripper:=gen3_lite_2f robot_ip:=192.168.1.10 use_fake_hardware:=False
 ```
 
 To move to a cartesian position:
