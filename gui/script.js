@@ -10,6 +10,18 @@ Chart.defaults.color = "#D8DEE9"
 Chart.defaults.font.family = 'Ubuntu Mono'
 Chart.defaults.font.size = 16
 
+let round = true;
+function contextRound(num) {
+    if (round) {
+        return Math.round((num + Number.EPSILON) * 100) / 100;
+    } else {
+        return num;
+    }
+}
+document.getElementById("round-toggle").addEventListener("click", ()=>{
+    round = !round;
+})
+
 const cartesian_pos = new ROSLIB.Topic({
     ros, name: "/cart_pose", messageType: "geometry_msgs/Pose"
 });
@@ -43,6 +55,7 @@ joint_angles.subscribe((msg)=>{
 
 // Stores current end effector transformation of arm
 let eef_tf = {pos: {}, angles: {}};
+let eef_tf_pos_array, eef_tf_angles_array = [];
 const arm_pos_display = document.getElementById("arm_pos");
 const arm_rot_display = document.getElementById("arm_rot");
 robot_position.subscribe((msg)=>{
@@ -51,9 +64,10 @@ robot_position.subscribe((msg)=>{
     // Recive ZYX euler angles of the gripper's orientation
     ({z, y, x} = msg.orientation);
     eef_tf.angles = {x, y, z};
-    arm_pos_display.innerHTML = `Cartesian position: X: ${eef_tf.pos.x}, Y: ${eef_tf.pos.y}, Z: ${eef_tf.pos.z}`;
-    arm_rot_display.innerHTML = `Euler angles: Z: ${eef_tf.angles.z}, Y: ${eef_tf.pos.y}, X: ${eef_tf.angles.x}`;
-    
+    // console.log(eef_tf)
+    arm_pos_display.innerHTML = `Cartesian position: X: ${contextRound(eef_tf.pos.x)}, Y: ${contextRound(eef_tf.pos.y)}, Z: ${contextRound(eef_tf.pos.z)}`;
+    arm_rot_display.innerHTML = `Euler angles: Z: ${contextRound(eef_tf.angles.z)}, Y: ${contextRound(eef_tf.pos.y)}, X: ${contextRound(eef_tf.angles.x)}`;
+
 })
 
 let jacobian = [];
@@ -72,7 +86,7 @@ robot_jacobian.subscribe((msg)=>{
         for (let j = 0; j < 6; j++) {
             row.push(msg.data[i*6 + j]);
             let td = document.createElement("td");
-            td.innerText = msg.data[i*6 + j];
+            td.innerText = contextRound(msg.data[i*6 + j]);
             tr.appendChild(td);
         }
    
@@ -118,10 +132,10 @@ document.getElementById("move").onclick = (e) => {
     cartesian_pos.publish({position: {x, y, z}, orientation: {x:0, y:0, z:0}})
 }
 
-const new_chart = (array, elID, axesLabel) => new Chart(document.getElementById(elID), {
+const arm_chart = (array, elID, axesLabel) => new Chart(document.getElementById(elID), {
     type: "line",
     data: {
-        datasets: [
+        datasets:[
             {
                 label: "Joint 1",
                 borderColor: "#BF616A",
@@ -152,7 +166,7 @@ const new_chart = (array, elID, axesLabel) => new Chart(document.getElementById(
                 borderColor: "#B48EAD",
                 data: []
             },
-
+        
         ]
     },
     options: {
@@ -164,7 +178,7 @@ const new_chart = (array, elID, axesLabel) => new Chart(document.getElementById(
                         chart.data.datasets.forEach((dataset, i)=>{
                             dataset.data.push({
                                 x: Date.now(),
-                                y: array[i]
+                                y: contextRound(array[i])
                             })
                         })
                     }
@@ -180,5 +194,44 @@ const new_chart = (array, elID, axesLabel) => new Chart(document.getElementById(
     }
 })
 
-const angles_chart = new_chart(global_joint_angles, "joint_angles", "(rad)");
-const vel_chart = new_chart(global_joint_velocities, "joint_vel", "rad/s");
+const angles_chart = arm_chart(global_joint_angles, "joint_angles", "(rad)");
+const vel_chart = arm_chart(global_joint_velocities, "joint_vel", "(rad/s)");
+
+
+const pose_chart = (array, elID, axesLabel) => new Chart(document.getElementById(elID), {
+    type: "line",
+    data: {
+        datasets: [
+            {label: "X", borderColor:"#BF616A", data: []},
+            {label: "Y", borderColor:"#A3BE8C", data: []},
+            {label: "Z", borderColor:"#88C0D0", data: []}
+        ]
+    },
+    options: {
+        scales: {
+            x: {
+                type: "realtime",
+                realtime: {
+                    onRefresh: chart => {
+                        chart.data.datasets.forEach((dataset, i)=>{
+                            dataset.data.push({
+                                x: Date.now(),
+                                y: contextRound(Object.values(eef_tf[array])[i])
+                            })
+                        })
+                    }
+                }
+            },
+            y: {
+                title: {
+                    text: axesLabel,
+                    display: true
+                },
+            }
+        }
+    }
+})
+
+const arm_pos_chart = pose_chart("pos", "arm_pos_canvas", "(m)");
+const arm_rot_chart = pose_chart("angles", "arm_rot_canvas", "(rad)",);
+

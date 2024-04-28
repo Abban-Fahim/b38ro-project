@@ -16,24 +16,30 @@
 </head>
 <body>
     <h1>Dashboard<h1>
+    <button id="round-toggle">Toggle value accuracy</button>
     <main>
         <div>
 
             <h2>Move arm to cartesian position:</h2>
             <div id="pos_control">
                 x: <label id="label_x"></label>
-                <input type="text" id="pos_x" name="pos_x">
+                <input type="range" id="pos_x" max="2" min="-2" step="0.1" value="0.4">
                 y: <label id="label_y"></label>
-                <input type="text" id="pos_y" name="pos_y">
+                <input type="range" id="pos_y" max="2" min="-2" step="0.1" value="0.4">
                 z: <label id="label_z"></label>
-                <input type="text" id="pos_z" name="pos_z">
+                <input type="range" id="pos_z" max="2" min="0.1" step="0.1" value="0.5">
                 <button id="move">Move</button>
             </div>
             
-            <h2>Arm position and orientation:</h2>
-            <div>
-                <p id="arm_pos"></p>
-                <p id="arm_rot"></p>
+            <div class="charts">
+                <div style="position: relative; height:20vh; width:40vw">
+                    <p id="arm_pos"></p>
+                    <canvas id="arm_pos_canvas"></canvas>
+                </div>
+                <div style="position: relative; height:20vh; width:40vw">
+                    <p id="arm_rot"></p>
+                    <canvas id="arm_rot_canvas"></canvas>
+                </div>
             </div>
             
             <h2>Robot jacobian</h2>
@@ -64,7 +70,7 @@
         </div>
     </main>
     
-    <div id="charts">
+    <div class="charts">
         <div style="position: relative; height:20vh; width:40vw">
             <h2>Joint angles monitoring:</h2>
             <canvas id="joint_angles"></canvas>
