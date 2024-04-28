@@ -22,7 +22,7 @@ import scipy.spatial.transform as sp
 jointNames = ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"]
 
 
-class MinimalPublisher(Node):
+class JointsPublisher(Node):
 
     def __init__(self):
         super().__init__("joints")
@@ -173,9 +173,9 @@ class MinimalPublisher(Node):
 
 def main():
     rclpy.init()
-    minimal_publisher = MinimalPublisher()
-    rclpy.spin(minimal_publisher)
-    minimal_publisher.destroy_node()
+    joints_publisher = JointsPublisher()
+    rclpy.spin(joints_publisher)
+    joints_publisher.destroy_node()
     rclpy.shutdown()
 
 

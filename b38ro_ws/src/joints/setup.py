@@ -25,7 +25,7 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "talker=joints.pub2:main",
+            "joints=joints.joints:main",
             "controller=joints.controller:main",
             "game=joints.main:main",
             "vision=joints.vision:main",

@@ -1,25 +1,15 @@
-
-# import ROS
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.node import Node
 from rclpy.time import Duration
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Float32, Int32, Int32MultiArray, Bool
-
-#import standard libraries 
 import math
 import time
-import numpy 
+import numpy
 
-# import libs
-# import picplace.py as p
-# import tttai.py as t
-# import waitformove.py as w
-from .move import det_bord_cart
+from .board import ris
 from .tttai import dec, win
-
-# import firstmove.py as fm
 
 
 class Game(Node):
@@ -35,13 +25,12 @@ class Game(Node):
         )
         self.create_subscription(Int32, "/human_move", self.human_move_cb, 10)
 
-        #restart copelia sim 
+        # restart copelia sim
 
-        self.start_sim = self.create_publisher(Bool,"/startSimulaion",10)
-        self.stop_sim = self.create_publisher(Bool,"/stopSimulation",10)
+        self.start_sim = self.create_publisher(Bool, "/startSimulaion", 10)
+        self.stop_sim = self.create_publisher(Bool, "/stopSimulation", 10)
         self.temT = Bool()
-        self.temT.data =False
-        
+        self.temT.data = False
 
         print("tt")
         self.stop_sim.publish(self.temT)
@@ -49,7 +38,7 @@ class Game(Node):
         time.sleep(2)
         self.start_sim.publish(self.temT)
         print("f")
-            
+
         # store board state 0 = empty, 2 = ai, 1 = player
         self.board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         # store current player and winner if any
@@ -64,11 +53,11 @@ class Game(Node):
             -0.150,
         ]  # find positions and calibrate with cp ,do in move.py
 
-        self.board_positions = det_bord_cart(self.corner_1, self.corner_2)
+        self.board_positions = ris(self.corner_1, self.corner_2)
 
-        #var to store current position for split movement
-        self.cur_pos = [0,0,0]
-        
+        # var to store current position for split movement
+        self.cur_pos = [0, 0, 0]
+
         # define resting pose
         self.retract = Pose()
         self.retract.position.x = 0.0
@@ -160,13 +149,13 @@ class Game(Node):
         elif self.win_state == 1:
             self.rob_rage()
 
-    def sim_state(self,msg: Int32):
+    def sim_state(self, msg: Int32):
         self.simm_state = msg.data
 
     def human_move_cb(self, msg: Int32):
         self.last_human_move = msg.data
 
-    def move_to_position(self, tar,tots):
+    def move_to_position(self, tar, tots):
         newMsg = Pose()
         newMsg.position.x = tar[0]
         newMsg.position.y = tar[1]
@@ -184,7 +173,7 @@ class Game(Node):
     #     yb = (1 - t) ** 2 * org[1] + 2 * (1 - t) * t * P1[1] + t ** 2 * xyz[1]
     #     zb = (1 - t) ** 2 * org[2] + 2 * (1 - t) * t * P1[2] + t ** 2 * xyz[2]
     #     return xb, yb, zb
-    
+
     # def generate_curve_points(self,org, P1, xyz, step=0.1):
     #     points = []
     #     t = 0
@@ -192,7 +181,7 @@ class Game(Node):
     #         points.append(self.bezier_curve(org, P1, xyz, t))
     #         t += step
     #     return points
-        
+
     # def move_to_position_split(self,org ,x, y, z ,steps,tots):
     #     # initial_pose = [org[0], org[1], org[2]]
     #     # final_pose = [x, y, z]
@@ -201,14 +190,13 @@ class Game(Node):
     #     step_size = len(points) // steps  # Calculate step size
     #     for i in range(0, len(points), step_size):
     #         self.move_to_position(points[i][0], points[i][1], points[i][2], tots/steps)
-            
-    def move_to_position_split(self,tar ,steps,tots):
 
-        o2t_s = numpy.linspace(self.cur_pos,tar,steps)
-        
+    def move_to_position_split(self, tar, steps, tots):
+
+        o2t_s = numpy.linspace(self.cur_pos, tar, steps)
+
         for x in o2t_s:
-            self.move_to_position(x,tots/steps)
-            
+            self.move_to_position(x, tots / steps)
 
     def make_move(self, msg):
         # Determine using ai where to place
@@ -221,7 +209,14 @@ class Game(Node):
         # X is constant value since blocks are in a line
         # Y values increment by 0.1 each time, do depending
         # on game state we pick up the blocks (y=0.1*n-0.5)
-        pp = [[-0.125, 0.4, 0.05],[0.125, 0.4, 0.05], [0.0, 0.4, 0.05],  [0.125, -0.4, 0.05], [0.0, -0.4, 0.05], [-0.125, -0.4, 0.05]]
+        pp = [
+            [-0.125, 0.4, 0.05],
+            [0.125, 0.4, 0.05],
+            [0.0, 0.4, 0.05],
+            [0.125, -0.4, 0.05],
+            [0.0, -0.4, 0.05],
+            [-0.125, -0.4, 0.05],
+        ]
 
         # steps to pickup block :
         # move above block
@@ -230,17 +225,23 @@ class Game(Node):
         # move up
 
         # move above the block
-        self.move_to_position([pp[self.moves_numai][0],pp[self.moves_numai][1] , 0.45],15)
+        self.move_to_position(
+            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 15
+        )
 
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
-        self.move_to_position_split([pp[self.moves_numai][0], pp[self.moves_numai][1], 0.25],5,12)
- 
+        self.move_to_position_split(
+            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.25], 5, 12
+        )
+
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
         # move up
-        self.move_to_position_split([pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45],3,7)
-        self.moves_numai = self.moves_numai +1
+        self.move_to_position_split(
+            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 3, 7
+        )
+        self.moves_numai = self.moves_numai + 1
         # steps to move and drop block  :
         # move to centeral resting position
         # move above the dropping point
@@ -249,22 +250,23 @@ class Game(Node):
         # move above the dropping point
         # move back to centeral
 
-        
-        #move to mid posiion 
-        self.move_to_position([self.board_positions[4][0],self.board_positions[4][1],0.5],10)
+        # move to mid posiion
+        self.move_to_position(
+            [self.board_positions[4][0], self.board_positions[4][1], 0.5], 10
+        )
 
         # move above dropping point
-        self.move_to_position([msg[0], msg[1], 0.45],5)
+        self.move_to_position([msg[0], msg[1], 0.45], 5)
 
         # move down a bit
-        self.move_to_position_split([msg[0], msg[1], 0.255],7,15)
+        self.move_to_position_split([msg[0], msg[1], 0.255], 7, 15)
 
         # open gripper
         self.gripper_topic.publish(self.gripper_open)
         time.sleep(2)
 
         # move up
-        self.move_to_position_split([msg[0], msg[1], 0.45],5,10)
+        self.move_to_position_split([msg[0], msg[1], 0.45], 5, 10)
 
         # move to rest
         self.position_topic.publish(self.retract)
@@ -272,11 +274,15 @@ class Game(Node):
     def rob_celeb(self):
         # idk have the robot do something when it wins ?
         # make it twerk or sthm :>
-        print("Pathetic. You call that effort? Try again when you're ready to stop embarrassing yourself.")
+        print(
+            "Pathetic. You call that effort? Try again when you're ready to stop embarrassing yourself."
+        )
 
     def rob_rage(self):
         # make the robot sweep the game peices off the board when it louses :)
-        print("Ugh, what a fluke. I must have malfunctioned momentarily to let a weakling like you win. Enjoy your moment of undeserved glory while it lasts.")
+        print(
+            "Ugh, what a fluke. I must have malfunctioned momentarily to let a weakling like you win. Enjoy your moment of undeserved glory while it lasts."
+        )
 
 
 def main():
