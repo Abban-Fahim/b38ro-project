@@ -29,6 +29,7 @@ setup(
             "controller=joints.controller:main",
             "game=joints.main:main",
             "vision=joints.vision:main",
+            "velocity_demo=joints.velocity_demo:main",
         ],
     },
 )

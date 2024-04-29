@@ -56,9 +56,9 @@ class Controller(Node):
         time_diff = curr_time - self.last_publish
         if time_diff.nanoseconds > 500000000:
             self.last_publish = curr_time
-            self.arm_pose.position.x += -msg.axes[0] * 0.02
-            self.arm_pose.position.y += msg.axes[1] * 0.02
-            self.arm_pose.position.z += msg.axes[4] * 0.02
+            self.arm_pose.position.x += -msg.axes[0] * 0.2
+            self.arm_pose.position.y += msg.axes[1] * 0.2
+            self.arm_pose.position.z += msg.axes[4] * 0.2
 
             # Send new arm position to move to
             self.arm_pose_pub.publish(self.arm_pose)

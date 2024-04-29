@@ -8,7 +8,7 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from rclpy.action import ActionClient
 from control_msgs.action import GripperCommand
 from controller_manager.controller_manager_services import SwitchController
-from example_interfaces.srv._trigger import Trigger
+from example_interfaces.srv import Trigger
 
 from pykin.robots.single_arm import SingleArm
 from pykin.kinematics.transform import (
@@ -18,6 +18,7 @@ from pykin.kinematics.jacobian import calc_jacobian
 
 from rclpy.time import Duration
 import scipy.spatial.transform as sp
+import numpy as np
 
 jointNames = ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"]
 
@@ -38,11 +39,6 @@ class JointsPublisher(Node):
             Float32MultiArray, "robot_jacobian", 10
         )
 
-        # Action client for moving the gripper
-        self.gripper_client = ActionClient(
-            self, GripperCommand, "robotiq_gripper_controller/gripper_cmd"
-        )
-
         # Action clients for restting the arm in case of a fault
         # self.create_subscription(Bool, "reset_arm", self.reset_arm, 10)
         # self.reset_fault = ActionClient(self, Trigger, "fault_controller/reset_fault")
@@ -52,7 +48,11 @@ class JointsPublisher(Node):
 
         # receive Cartesian poses to move to
         self.create_subscription(Pose, "cart_pose", self.move_to_angles, 10)
-        self.create_subscription(Float32, "gripper_pose", self.move_gripper, 10)
+
+        # Reci
+        self.create_subscription(Float32MultiArray, "target_vel", self.target_vel, 10)
+        self.eef_vel = np.ones(6)
+        print(self.eef_vel)
 
         # recieve robot's current joint angles
         self.create_subscription(JointState, "joint_states", self.set_robot_state, 10)
@@ -64,7 +64,11 @@ class JointsPublisher(Node):
 
         self.robot_angles = [0, 0, 0, 0, 0, 0]
         self.robot_velocities = [0, 0, 0, 0, 0, 0]
-        self.jacobian = []
+        self.jacobian = np.zeros((6, 6))
+
+    def target_vel(self, msg: Float32MultiArray):
+        self.eef_vel = np.array(msg.data)
+        print(self.eef_vel, self.eef_vel.shape)
 
     def set_robot_state(self, msg: JointState):
         # set robot's joint config from message
@@ -129,46 +133,28 @@ class JointsPublisher(Node):
             ],
         )
 
+        # Calculate joint velocities based on eef_vel
+        try:
+            angleVel = np.matmul(np.linalg.inv(self.jacobian), self.eef_vel)
+
+            print(np.linalg.inv(self.jacobian), self.eef_vel)
+            print(angleVel)
+        except np.linalg.LinAlgError:
+            print("cant find inverse of jacobian")
+            angleVel = np.zeros(0)
+
         # Publish only one point to JointTrajectory
         traj = JointTrajectory()
         traj.joint_names = jointNames
         point = JointTrajectoryPoint()
         point.positions = angles.tolist()
+        point.velocities = angleVel.tolist()  # add velocities to joints commander
         point.time_from_start = Duration(seconds=3).to_msg()
         traj.points.append(point)
 
         # Publish the calculated joint angles
         # print(eulers, angles)
         self.target_angles.publish(traj)
-
-    def move_gripper(self, msg: Float32):
-        print("Recived gripper goal", msg.data)
-        gripper_msg = GripperCommand.Goal()
-        gripper_msg.command.position = msg.data
-        gripper_msg.command.max_effort = 100.0
-        print(gripper_msg)
-        self.gripper_client.send_goal_async(gripper_msg)
-
-    def reset_arm(self, msg: Bool):
-        # Deactiavte controllers
-        switch_command = SwitchController.Request()
-        switch_command.deactivate_controllers = [
-            "robotiq_gripper_controller",
-            "joint_trajectory_controller",
-        ]
-        self.controller_switcher.send_goal_async(switch_command)
-
-        # Reset the fault controller
-        fault_command = Trigger.Request()
-        self.reset_fault.send_goal_async(fault_command)
-
-        # Activate controllers
-        switch_command.deactivate_controllers = []
-        switch_command.activate_controllers = [
-            "robotiq_gripper_controller",
-            "joint_trajectory_controller",
-        ]
-        self.controller_switcher.send_goal_async(switch_command)
 
 
 def main():

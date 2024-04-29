@@ -27,17 +27,17 @@ class Game(Node):
 
         # restart copelia sim
 
-        self.start_sim = self.create_publisher(Bool, "/startSimulaion", 10)
-        self.stop_sim = self.create_publisher(Bool, "/stopSimulation", 10)
-        self.temT = Bool()
-        self.temT.data = False
+        # self.start_sim = self.create_publisher(Bool, "/startSimulaion", 10)
+        # self.stop_sim = self.create_publisher(Bool, "/stopSimulation", 10)
+        # self.temT = Bool()
+        # self.temT.data = False
 
-        print("tt")
-        self.stop_sim.publish(self.temT)
-        print("t")
-        time.sleep(2)
-        self.start_sim.publish(self.temT)
-        print("f")
+        # print("tt")
+        # self.stop_sim.publish(self.temT)
+        # print("t")
+        # time.sleep(2)
+        # self.start_sim.publish(self.temT)
+        # print("f")
 
         # store board state 0 = empty, 2 = ai, 1 = player
         self.board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -77,6 +77,14 @@ class Game(Node):
         self.moves_numai = 0
 
         # main game logic
+        self.move_to_position([0.2, 0.2, 0.25], 10)
+        self.gripper_topic.publish(self.gripper_open)
+        self.move_to_position_split([0.2, 0.2, 0.14], 3, 5)
+        self.gripper_topic.publish(self.gripper_closed)
+        self.move_to_position_split([0.2, 0.2, 0.25], 3, 2)
+        self.move_to_position([0.2, -0.2, 0.25], 3)
+        self.move_to_position_split([0.2, -0.2, 0.14], 3, 5)
+        self.gripper_topic.publish(self.gripper_open)
 
         # det if shuman / ai go first
         self.turn = int(input("Who will go first (AI = 2, HUMAN = 1) "))
@@ -94,6 +102,7 @@ class Game(Node):
         )
 
     def game_loop(self):
+
         print("Move #", self.moves_num)
         check_for_input_again = True
 
@@ -206,9 +215,6 @@ class Game(Node):
         # go back to retract
 
         # First - pickup block
-        # X is constant value since blocks are in a line
-        # Y values increment by 0.1 each time, do depending
-        # on game state we pick up the blocks (y=0.1*n-0.5)
         pp = [
             [-0.125, 0.4, 0.05],
             [0.125, 0.4, 0.05],
@@ -232,7 +238,7 @@ class Game(Node):
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
         self.move_to_position_split(
-            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.25], 5, 12
+            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.25], 10, 30
         )
 
         # close gripper
@@ -245,21 +251,21 @@ class Game(Node):
         # steps to move and drop block  :
         # move to centeral resting position
         # move above the dropping point
-        # move down a bit --SKIP?
+        # move down a bit --SKIP? yes skip!
         # drop / open gripper
         # move above the dropping point
         # move back to centeral
 
         # move to mid posiion
         self.move_to_position(
-            [self.board_positions[4][0], self.board_positions[4][1], 0.5], 10
+            [self.board_positions[4][0], self.board_positions[4][1], 0.5], 7
         )
 
         # move above dropping point
         self.move_to_position([msg[0], msg[1], 0.45], 5)
 
         # move down a bit
-        self.move_to_position_split([msg[0], msg[1], 0.255], 7, 15)
+        self.move_to_position_split([msg[0], msg[1], 0.255], 20, 30)
 
         # open gripper
         self.gripper_topic.publish(self.gripper_open)
