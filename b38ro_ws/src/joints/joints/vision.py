@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32
-import cv2
+import cv2 as cv
 import cv_bridge
 import numpy as np
 
@@ -18,24 +18,34 @@ class Vision(Node):
         cvImg = self.bridge.imgmsg_to_cv2(
             msg, "bgr8"
         )  # convert ROS Image to ndarray (compatible with opencv)
-        cvImg = cv2.flip(
+        cvImg = cv.flip(
             cvImg, 0
         )  # flip the image vertically, since coppelia publishes weird images
 
-        grayImg = cv2.cvtColor(cvImg, cv2.COLOR_BGR2GRAY)  # convert to gray
+        grayImg = cv.cvtColor(cvImg, cv.COLOR_BGR2GRAY)  # convert to gray
 
-        blurred = cv2.blur(grayImg, (3, 3), 0)  # blur the image
-
-        edges = cv2.Canny(
+        edges = cv.Canny(
             grayImg, 50.0, 150.0, np.ndarray((3, 3)), 3
         )  # find and detect edges
 
-        blurredEdges = cv2.GaussianBlur(edges, (3, 3), 2, sigmaY=2)
+        blurred = cv.blur(edges, (3, 3), 0)  # blur the image
 
-        print(edges)
-        cv2.imshow("edges", edges)  # show the image
-        cv2.imshow("blurred", blurredEdges)  # show the image
-        cv2.waitKey(3)
+        hough = cv.HoughCircles(blurred, cv.HOUGH_GRADIENT, 1.2, 1)
+        if not (hough is None):
+            copy = cvImg.copy()
+            for circle in hough:
+                print(len(hough))
+                copy = cv.circle(
+                    copy,
+                    (int(circle[0][0]), int(circle[0][1])),
+                    int(circle[0][2]),
+                    (0, 0, 250),
+                )
+            cv.imshow("drawing", copy)
+        print(hough)
+        cv.imshow("edges", edges)  # show the image
+        # cv.imshow("blurred", hough)  # show the image
+        cv.waitKey(3)
 
 
 def main():

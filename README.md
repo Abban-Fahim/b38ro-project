@@ -1,21 +1,8 @@
-# Planning
+This project contains all the code written for our coursework for the second year course Introduction to Robotics at Heriot-Watt University. We implemented a tic-tac-toe game played with a human against a robotic manipulator. 
 
-Primary tasks (required):
+We used a [Kinova Gen3 Lite](https://www.kinovarobotics.com/product/gen3-lite-robots) and [Coppeliasim](https://www.coppeliarobotics.com/) for simulation, along with [ROS](https://ros.org/) (Hummble) as the main part of the software stack.
 
-- [x]  inverse kinematics (move end effector to a desired Cartesian pose)
-- [ ] movement with desired translational and rotational velocity
-- [x] plan and make robot follow Cartesian trajectories
-- [x] read, write and visualise joint angles
-- [x] read, compute, write and plot Cartesian positions (FK) and Euler angles of robot links
-- [x] read, write and compute Jacobian matrices (taught fi week 8)
-- [x] be able to move the robot with controllers/keyboard or other interesting stuff
-
-Report (5-10 pages):
-
-- what our work simulates
-- what and how was theoretical material used for developing our simulation
-- what's good bout our simulation and any real applications
-- data, graphs, numbers, results etc about or simulations
+This code in the repository is licensed under an MIT license, with the exception of files provided by Kinova inc. See [license](https://github.com/Abban-Fahim/b38ro-project?tab=License-1-ov-file) for more info.
 
 ## Instructions
 
@@ -105,16 +92,4 @@ To send joint commands,
     ]
   }" -1
 ```
-
-## Commanding robot
-
-To move the arm with a controller, connect a PS4 controller through USB (natively only works on Linux), and run
-
-```bash
-ros2 launch joints controller.launch.py
-```
-
-## Ongoing tasks
-
- - how to pick
 

@@ -7,14 +7,13 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 from rclpy.action import ActionClient
 from control_msgs.action import GripperCommand
-from controller_manager.controller_manager_services import SwitchController
-from example_interfaces.srv._trigger import Trigger
 
 from pykin.robots.single_arm import SingleArm
 from pykin.kinematics.transform import (
     Transform,
 )
 from pykin.kinematics.jacobian import calc_jacobian
+from pykin.collision.collision_manager import CollisionManager
 
 from rclpy.time import Duration
 import scipy.spatial.transform as sp
@@ -43,13 +42,6 @@ class JointsPublisher(Node):
             self, GripperCommand, "robotiq_gripper_controller/gripper_cmd"
         )
 
-        # Action clients for restting the arm in case of a fault
-        # self.create_subscription(Bool, "reset_arm", self.reset_arm, 10)
-        # self.reset_fault = ActionClient(self, Trigger, "fault_controller/reset_fault")
-        # self.controller_switcher = ActionClient(
-        #     self, SwitchController, "controller_manager/switch_controller"
-        # )
-
         # receive Cartesian poses to move to
         self.create_subscription(Pose, "cart_pose", self.move_to_angles, 10)
         self.create_subscription(Float32, "gripper_pose", self.move_gripper, 10)
@@ -58,9 +50,18 @@ class JointsPublisher(Node):
         self.create_subscription(JointState, "joint_states", self.set_robot_state, 10)
 
         # Load robot from URDF file
-        file_path = "../assets/urdf/KR7108-URDF/KR7108-URDF.urdf"
-        self.robot = SingleArm(file_path, Transform(rot=[0.0, 0.0, 0.0], pos=[0, 0, 0]))
+        self.robot = SingleArm(
+            "../assets/urdf/KR7108-URDF/KR7108-URDF.urdf",
+            Transform(rot=[0.0, 0.0, 0.0], pos=[0, 0, 0]),
+            True,
+            "robotiq140_gripper",
+        )
         self.robot.setup_link_name("BASE", "END_EFFECTOR")
+        self.collision_manager = CollisionManager(True)
+        self.collision_manager.setup_robot_collision(self.robot, "visual")
+        self.collision_manager.setup_gripper_collision(self.robot, None, "visual")
+
+        print(self.collision_manager.in_collision_internal(True))
 
         self.robot_angles = [0, 0, 0, 0, 0, 0]
         self.robot_velocities = [0, 0, 0, 0, 0, 0]
@@ -148,27 +149,6 @@ class JointsPublisher(Node):
         gripper_msg.command.max_effort = 100.0
         print(gripper_msg)
         self.gripper_client.send_goal_async(gripper_msg)
-
-    def reset_arm(self, msg: Bool):
-        # Deactiavte controllers
-        switch_command = SwitchController.Request()
-        switch_command.deactivate_controllers = [
-            "robotiq_gripper_controller",
-            "joint_trajectory_controller",
-        ]
-        self.controller_switcher.send_goal_async(switch_command)
-
-        # Reset the fault controller
-        fault_command = Trigger.Request()
-        self.reset_fault.send_goal_async(fault_command)
-
-        # Activate controllers
-        switch_command.deactivate_controllers = []
-        switch_command.activate_controllers = [
-            "robotiq_gripper_controller",
-            "joint_trajectory_controller",
-        ]
-        self.controller_switcher.send_goal_async(switch_command)
 
 
 def main():
