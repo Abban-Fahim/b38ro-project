@@ -15,6 +15,8 @@ from pykin.kinematics.transform import (
 from pykin.kinematics.jacobian import calc_jacobian
 from pykin.collision.collision_manager import CollisionManager
 
+from pykin.collision.collision_manager import CollisionManager
+
 from rclpy.time import Duration
 import scipy.spatial.transform as sp
 
@@ -63,6 +65,10 @@ class JointsPublisher(Node):
 
         print(self.collision_manager.in_collision_internal(True))
 
+        self.c_manager = CollisionManager(is_robot=True)
+        self.c_manager.setup_robot_collision(self.robot, geom="visual")
+        self.c_manager.show_collision_info()
+        
         self.robot_angles = [0, 0, 0, 0, 0, 0]
         self.robot_velocities = [0, 0, 0, 0, 0, 0]
         self.jacobian = []
@@ -117,6 +123,7 @@ class JointsPublisher(Node):
         eulers = [msg.orientation.x, msg.orientation.y, msg.orientation.z]
         quat = sp.Rotation.from_euler("ZYX", eulers).as_quat()
         # quat = [0, 0, 1, 1]
+        
         angles = self.robot.inverse_kin(
             self.robot_angles,
             [
@@ -128,7 +135,23 @@ class JointsPublisher(Node):
                 quat[2],
                 quat[3],
             ],
+            # self.c_manager.set_transform
         )
+        self.robot.set_transform(angles)
+        while self.c_manager.in_collision_internal():
+            angles = self.robot.inverse_kin(
+            self.robot_angles,
+            [
+                msg.position.x,
+                msg.position.y,
+                msg.position.z,
+                quat[0],
+                quat[1],
+                quat[2],
+                quat[3],
+            ],
+            self.robot.set_transform(angles)
+            )
 
         # Publish only one point to JointTrajectory
         traj = JointTrajectory()
