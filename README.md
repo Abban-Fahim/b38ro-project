@@ -1,6 +1,6 @@
 This project contains all the code written for our coursework for the second year course Introduction to Robotics at Heriot-Watt University. We implemented a tic-tac-toe game played with a human against a robotic manipulator. 
 
-We used a [Kinova Gen3 Lite](https://www.kinovarobotics.com/product/gen3-lite-robots) and [Coppeliasim](https://www.coppeliarobotics.com/) for simulation, along with [ROS](https://ros.org/) (Hummble) as the main part of the software stack.
+We used a [Kinova Gen3 Lite](https://www.kinovarobotics.com/product/gen3-lite-robots) and [Coppeliasim](https://www.coppeliarobotics.com/) for simulation, along with [ROS](https://ros.org/) (Humble) as the main part of the software stack.
 
 This code in the repository is licensed under an MIT license, with the exception of files provided by Kinova inc. See [license](https://github.com/Abban-Fahim/b38ro-project?tab=License-1-ov-file) for more info.
 
