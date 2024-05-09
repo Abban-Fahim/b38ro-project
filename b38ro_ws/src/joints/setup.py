@@ -30,6 +30,7 @@ setup(
             "game=joints.main:main",
             "vision=joints.vision:main",
             "velocity_demo=joints.velocity_demo:main",
+            "feedback=joints.feedback:main"
         ],
     },
 )

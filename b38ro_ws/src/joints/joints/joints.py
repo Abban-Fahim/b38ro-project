@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32, Float32MultiArray, Bool
+from std_msgs.msg import Float32, Float32MultiArray, Bool ,Int32
 from geometry_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
@@ -45,6 +45,7 @@ class JointsPublisher(Node):
         )
 
         # receive Cartesian poses to move to
+
         self.create_subscription(Pose, "cart_pose", self.move_to_angles, 10)
         self.create_subscription(Float32, "gripper_pose", self.move_gripper, 10)
 
@@ -172,6 +173,7 @@ class JointsPublisher(Node):
         gripper_msg.command.max_effort = 100.0
         print(gripper_msg)
         self.gripper_client.send_goal_async(gripper_msg)
+    
 
 
 def main():

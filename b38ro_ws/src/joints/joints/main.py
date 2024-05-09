@@ -24,7 +24,7 @@ class Game(Node):
             Int32MultiArray, "/board_state", 10
         )
         self.create_subscription(Int32, "/human_move", self.human_move_cb, 10)
-
+        self.create_subscription(Int32, "/feedback", self.feedba, 10)
         # restart copelia sim
 
         # self.start_sim = self.create_publisher(Bool, "/startSimulaion", 10)
@@ -174,7 +174,9 @@ class Game(Node):
         newMsg.orientation.y = 0.0
         newMsg.orientation.z = math.pi / 2
         self.position_topic.publish(newMsg)
-        time.sleep(tots)
+
+        while self.feedba == 0 :
+            print("e")
         self.cur_pos = tar
 
     #     def bezier_curve(self,org, P1, xyz, t):
@@ -289,7 +291,10 @@ class Game(Node):
         print(
             "Ugh, what a fluke. I must have malfunctioned momentarily to let a weakling like you win. Enjoy your moment of undeserved glory while it lasts."
         )
-
+    def feedba(self ,msg: Int32):
+        self.feedback  = msg.data 
+        print(msg.data)
+        
 
 def main():
     rclpy.init()
