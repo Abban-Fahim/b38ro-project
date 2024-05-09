@@ -19,7 +19,7 @@ class Game(Node):
         self.position_topic = self.create_publisher(Pose, "/cart_pose", 10)
         self.gripper_topic = self.create_publisher(Float32, "/gripper_pose", 10)
         self.gripper_value = Float32()
-
+        self.fee = 1
         self.board_state_pub = self.create_publisher(
             Int32MultiArray, "/board_state", 10
         )
@@ -164,6 +164,11 @@ class Game(Node):
     def human_move_cb(self, msg: Int32):
         self.last_human_move = msg.data
 
+    def feedba(self ,msg: Int32):
+        self.fee = msg.data 
+        print(msg.data)
+        
+
     def move_to_position(self, tar, tots):
         newMsg = Pose()
         newMsg.position.x = tar[0]
@@ -175,7 +180,8 @@ class Game(Node):
         newMsg.orientation.z = math.pi / 2
         self.position_topic.publish(newMsg)
 
-        while self.feedba == 0 :
+        while self.fee == 0 :
+            time.sleep(1)
             print("e")
         self.cur_pos = tar
 
@@ -291,10 +297,7 @@ class Game(Node):
         print(
             "Ugh, what a fluke. I must have malfunctioned momentarily to let a weakling like you win. Enjoy your moment of undeserved glory while it lasts."
         )
-    def feedba(self ,msg: Int32):
-        self.feedback  = msg.data 
-        print(msg.data)
-        
+
 
 def main():
     rclpy.init()
