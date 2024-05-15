@@ -26,7 +26,7 @@ class JointsPublisher(Node):
         # create feedback publisher 
         self.feedback = self.create_publisher(Int32, "/feedback", 10)
         
-        self.targstate = [0]
+        self.targstate = [0] 
     def targ(self ,msg :JointTrajectory):
         
         self.targstate = list(msg.points[0].positions)
