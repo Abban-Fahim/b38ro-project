@@ -41,7 +41,7 @@ class Vision(Node):
                     int(circle[0][2]),
                     (0, 0, 250),
                 )
-            cv.imshow("drawing", copy)
+            cv.imshow("drawing", cvImg)
         print(hough)
         cv.imshow("edges", edges)  # show the image
         # cv.imshow("blurred", hough)  # show the image
