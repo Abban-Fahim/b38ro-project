@@ -34,13 +34,11 @@ class JointsPublisher(Node):
     def curstate(self, msg: JointState ):
         self.curstate = list(msg.position)
 
-        print(self.curstate)
 
-        print(self.targstate)
 
         tem = 1 # idle / ~ at target
 
-        for a,b in zip(self.curstate,self.targstate):
+        for a,b in zip(self.curstate[:-1],self.targstate[:-1]):
             tol = 0.05*max(abs(a),abs(b))
             if abs(a-b) > tol :
                 tem = 0

@@ -167,23 +167,24 @@ class Game(Node):
     def feedba(self ,msg: Int32):
         self.fee = msg.data 
         print(msg.data)
-        
-
+   
     def move_to_position(self, tar, tots):
-        newMsg = Pose()
-        newMsg.position.x = tar[0]
-        newMsg.position.y = tar[1]
-        newMsg.position.z = tar[2]
+        self.newMsg = Pose()
+        self.newMsg.position.x = tar[0]
+        self.newMsg.position.y = tar[1]
+        self.newMsg.position.z = tar[2]
 
-        newMsg.orientation.x = math.pi
-        newMsg.orientation.y = 0.0
-        newMsg.orientation.z = math.pi / 2
-        self.position_topic.publish(newMsg)
+        self.newMsg.orientation.x = math.pi
+        self.newMsg.orientation.y = 0.0
+        self.newMsg.orientation.z = math.pi / 2
 
-        while self.fee == 0 :
-            time.sleep(1)
-            print("e")
         self.cur_pos = tar
+
+        while self.fee == 0:
+            time.sleep(1)
+            
+        self.position_topic.publish(self.newMsg)
+
 
     #     def bezier_curve(self,org, P1, xyz, t):
     #     xb = (1 - t) ** 2 * org[0] + 2 * (1 - t) * t * P1[0] + t ** 2 * xyz[0]
@@ -243,6 +244,8 @@ class Game(Node):
             [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 15
         )
 
+
+        
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
         self.move_to_position_split(
