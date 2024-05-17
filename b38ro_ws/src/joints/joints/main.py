@@ -77,17 +77,11 @@ class Game(Node):
         self.moves_numai = 0
 
         # main game logic
-        self.move_to_position([0.2, 0.2, 0.25], 10)
-        self.gripper_topic.publish(self.gripper_open)
-        self.move_to_position_split([0.2, 0.2, 0.14], 3, 5)
-        self.gripper_topic.publish(self.gripper_closed)
-        self.move_to_position_split([0.2, 0.2, 0.25], 3, 2)
-        self.move_to_position([0.2, -0.2, 0.25], 3)
-        self.move_to_position_split([0.2, -0.2, 0.14], 3, 5)
-        self.gripper_topic.publish(self.gripper_open)
 
         # det if shuman / ai go first
-        self.turn = int(input("Who will go first (AI = 2, HUMAN = 1) "))
+        # self.turn = int(input("Who will go first (AI = 2, HUMAN = 1) "))
+        # TODO - Add a better way of getting first move after launching from launch file
+        self.turn = 2
         self.moves_num = 1
         print("1st")
         self.position_topic.publish(self.retract)
@@ -164,10 +158,10 @@ class Game(Node):
     def human_move_cb(self, msg: Int32):
         self.last_human_move = msg.data
 
-    def feedba(self ,msg: Int32):
-        self.fee = msg.data 
+    def feedba(self, msg: Int32):
+        self.fee = msg.data
         print(msg.data)
-   
+
     def move_to_position(self, tar, tots):
         self.newMsg = Pose()
         self.newMsg.position.x = tar[0]
@@ -180,11 +174,12 @@ class Game(Node):
 
         self.cur_pos = tar
 
-        while self.fee == 0:
-            time.sleep(1)
-            
-        self.position_topic.publish(self.newMsg)
+        # while self.fee == 0:
+        #     time.sleep(1)
 
+        time.sleep(tots)
+
+        self.position_topic.publish(self.newMsg)
 
     #     def bezier_curve(self,org, P1, xyz, t):
     #     xb = (1 - t) ** 2 * org[0] + 2 * (1 - t) * t * P1[0] + t ** 2 * xyz[0]
@@ -230,7 +225,6 @@ class Game(Node):
             [0.0, 0.4, 0.05],
             [0.125, -0.4, 0.05],
             [0.0, -0.4, 0.05],
-            [-0.125, -0.4, 0.05],
         ]
 
         # steps to pickup block :
@@ -241,15 +235,13 @@ class Game(Node):
 
         # move above the block
         self.move_to_position(
-            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 15
+            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 10
         )
 
-
-        
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
         self.move_to_position_split(
-            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.25], 10, 30
+            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.22], 7, 5
         )
 
         # close gripper
@@ -259,6 +251,7 @@ class Game(Node):
             [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 3, 7
         )
         self.moves_numai = self.moves_numai + 1
+
         # steps to move and drop block  :
         # move to centeral resting position
         # move above the dropping point
@@ -276,14 +269,14 @@ class Game(Node):
         self.move_to_position([msg[0], msg[1], 0.45], 5)
 
         # move down a bit
-        self.move_to_position_split([msg[0], msg[1], 0.255], 20, 30)
+        self.move_to_position_split([msg[0], msg[1], 0.23], 5, 5)
 
         # open gripper
         self.gripper_topic.publish(self.gripper_open)
         time.sleep(2)
 
         # move up
-        self.move_to_position_split([msg[0], msg[1], 0.45], 5, 10)
+        self.move_to_position_split([msg[0], msg[1], 0.45], 5, 5)
 
         # move to rest
         self.position_topic.publish(self.retract)

@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
-from std_msgs.msg import Float32
+from std_msgs.msg import Int32, Int32MultiArray
 import cv2 as cv
 import cv_bridge
 import numpy as np
@@ -13,6 +13,17 @@ class Vision(Node):
 
         self.create_subscription(Image, "/camera/image/raw", self.camera_cb, 10)
         self.bridge = cv_bridge.CvBridge()
+
+        # topics to interact with the game logic
+        self.create_subscription(
+            Int32MultiArray, "/board_state", self.recieve_board, 10
+        )
+        self.movePublisher = self.create_publisher(Int32, "/human_move", 10)
+
+        self.boardState = np.zeros((9,))
+        self.boardStateRecieved = None
+
+        self.debug = False
 
     def camera_cb(self, msg: Image):
         cvImg = self.bridge.imgmsg_to_cv2(
@@ -64,7 +75,6 @@ class Vision(Node):
                         startX = hLines[0] - width
                         startY = vLines[0] - height
 
-                        boardState = np.zeros((9,))
                         segs = np.ndarray((3, 3), cv.Mat)
                         for row in range(3):
                             for cell in range(3):
@@ -72,19 +82,31 @@ class Vision(Node):
                                     startX : startX + width, startY : startY + height
                                 ]
                                 segs[row, cell] = seg
-                                boardState[cell * 3 + row] = self.check_major_colour(
-                                    seg
+                                self.boardState[cell * 3 + row] = (
+                                    self.check_major_colour(seg)
                                 )
                                 startX += width
                             startY += height
                             startX = hLines[0] - width
-                        print(boardState)
+                        if self.boardStateRecieved is not None:
+                            diff = self.boardState - self.boardStateRecieved
+                            self.get_logger().info(str(diff))
+                            for i in range(9):
+                                if diff[i] == 1:
+                                    msg = Int32()
+                                    msg.data = i
+                                    self.movePublisher.publish(msg)
+                                    i = 9
 
-        cv.imshow("edges", edges)  # show the image
-        cv.imshow("eroded", eroded)  # show the image
-        cv.imshow("drawing", cvImg)
-        cv.imshow("gray", grayImg)
-        cv.waitKey(3)
+        if self.debug:
+            cv.imshow("edges", edges)  # show the image
+            cv.imshow("eroded", eroded)  # show the image
+            cv.imshow("drawing", cvImg)
+            cv.imshow("gray", grayImg)
+            cv.waitKey(3)
+
+    def recieve_board(self, msg: Int32MultiArray):
+        self.boardStateRecieved = np.array(msg.data)
 
     # Function that unifies and centres two very similiar lines
     # based on thresholds for the polar parameters
