@@ -23,7 +23,7 @@ class Vision(Node):
         self.boardState = np.zeros((9,))
         self.boardStateRecieved = None
 
-        self.debug = False
+        self.debug = True
 
     def camera_cb(self, msg: Image):
         cvImg = self.bridge.imgmsg_to_cv2(
@@ -46,6 +46,9 @@ class Vision(Node):
 
         hLines = []
         vLines = []
+        step4 = cvImg.copy()
+        step5 = cvImg.copy()
+        step6 = cvImg.copy()
         if lines is not None:
             # Firstly filter out the lines that are very close to each other
             # Ideally, only 4 lines should be in the doc
@@ -67,8 +70,8 @@ class Vision(Node):
                     else:
                         hLines.append(int(rho))
                     # Draw purple lines showing the grid lines of the boar
-                    cv.line(cvImg, pt1, pt2, (255, 0, 255), 1, cv.LINE_AA)
-
+                    cv.line(step4, pt1, pt2, (255, 0, 255), 1, cv.LINE_AA)
+                    print(line)
                     if len(hLines) == 2 and len(vLines) == 2:
                         width = hLines[1] - hLines[0]
                         height = vLines[1] - vLines[0]
@@ -85,6 +88,20 @@ class Vision(Node):
                                 self.boardState[cell * 3 + row] = (
                                     self.check_major_colour(seg)
                                 )
+                                cv.rectangle(
+                                    step5,
+                                    (startY, startX),
+                                    (startY + height, startX + width),
+                                    (255, 0, 0),
+                                )
+                                cv.putText(
+                                    step6,
+                                    str(self.boardState[cell * 3 + row]),
+                                    (startY, startX),
+                                    cv.FONT_HERSHEY_PLAIN,
+                                    1.0,
+                                    (255, 0, 0),
+                                )
                                 startX += width
                             startY += height
                             startX = hLines[0] - width
@@ -99,10 +116,12 @@ class Vision(Node):
                                     i = 9
 
         if self.debug:
-            cv.imshow("edges", edges)  # show the image
-            cv.imshow("eroded", eroded)  # show the image
-            cv.imshow("drawing", cvImg)
-            cv.imshow("gray", grayImg)
+            cv.imshow("step 1", grayImg)
+            cv.imshow("step 2", eroded)
+            cv.imshow("step 3", edges)
+            cv.imshow("step 4", step4)
+            cv.imshow("step 5", step5)
+            cv.imshow("step 6", step6)
             cv.waitKey(3)
 
     def recieve_board(self, msg: Int32MultiArray):
