@@ -7,7 +7,7 @@ from std_msgs.msg import Float32, Int32, Int32MultiArray, Bool
 import math
 import time
 import numpy
-
+import threading 
 
 from .board import ris
 from .tttai import dec, win
@@ -19,7 +19,6 @@ class Game(Node):
 
         self.position_topic = self.create_publisher(Pose, "/cart_pose", 10)
         self.gripper_topic = self.create_publisher(Float32, "/gripper_pose", 10)
-        
         self.gripper_value = Float32()
         self.fee = 1
         self.board_state_pub = self.create_publisher(
@@ -27,6 +26,19 @@ class Game(Node):
         )
         self.create_subscription(Int32, "/human_move", self.human_move_cb, 10)
         self.create_subscription(Int32, "/feedback", self.feedba, 10)
+        # restart copelia sim
+
+        # self.start_sim = self.create_publisher(Bool, "/startSimulaion", 10)
+        # self.stop_sim = self.create_publisher(Bool, "/stopSimulation", 10)
+        # self.temT = Bool()
+        # self.temT.data = False
+
+        # print("tt")
+        # self.stop_sim.publish(self.temT)
+        # print("t")
+        # time.sleep(2)
+        # self.start_sim.publish(self.temT)
+        # print("f")
 
         # store board state 0 = empty, 2 = ai, 1 = player
         self.board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -170,6 +182,28 @@ class Game(Node):
 
         self.position_topic.publish(self.newMsg)
 
+    #     def bezier_curve(self,org, P1, xyz, t):
+    #     xb = (1 - t) ** 2 * org[0] + 2 * (1 - t) * t * P1[0] + t ** 2 * xyz[0]
+    #     yb = (1 - t) ** 2 * org[1] + 2 * (1 - t) * t * P1[1] + t ** 2 * xyz[1]
+    #     zb = (1 - t) ** 2 * org[2] + 2 * (1 - t) * t * P1[2] + t ** 2 * xyz[2]
+    #     return xb, yb, zb
+
+    # def generate_curve_points(self,org, P1, xyz, step=0.1):
+    #     points = []
+    #     t = 0
+    #     while t <= 1:
+    #         points.append(self.bezier_curve(org, P1, xyz, t))
+    #         t += step
+    #     return points
+
+    # def move_to_position_split(self,org ,x, y, z ,steps,tots):
+    #     # initial_pose = [org[0], org[1], org[2]]
+    #     # final_pose = [x, y, z]
+    #     # intermediate_pose = [(org[0]+x)/2, (org[1]+y)/2, (org[2]+z)/2 + 0.6]
+    #     points = self.generate_curve_points(org, [(org[0]+x)/2, (org[1]+y)/2, (org[2]+z)/2], [x, y, z])  # Generate curve points
+    #     step_size = len(points) // steps  # Calculate step size
+    #     for i in range(0, len(points), step_size):
+    #         self.move_to_position(points[i][0], points[i][1], points[i][2], tots/steps)
 
     def move_to_position_split(self, tar, steps, tots):
 
@@ -179,7 +213,11 @@ class Game(Node):
             self.move_to_position(x, tots / steps)
 
     def make_move(self, msg):
-
+        # Determine using ai where to place
+        # pick up a block
+        # move to the board position
+        # drop it
+        # go back to retract
 
         # First - pickup block
         pp = [
@@ -190,7 +228,11 @@ class Game(Node):
             [0.0, -0.4, 0.05],
         ]
 
-
+        # steps to pickup block :
+        # move above block
+        # move down with gripper open
+        # close gripper
+        # move up
 
         # move above the block
         self.move_to_position(
@@ -211,6 +253,13 @@ class Game(Node):
         )
         self.moves_numai = self.moves_numai + 1
 
+        # steps to move and drop block  :
+        # move to centeral resting position
+        # move above the dropping point
+        # move down a bit --SKIP? yes skip!
+        # drop / open gripper
+        # move above the dropping point
+        # move back to centeral
 
         # move to mid posiion
         self.move_to_position(
