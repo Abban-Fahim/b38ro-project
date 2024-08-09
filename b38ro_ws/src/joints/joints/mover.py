@@ -36,7 +36,17 @@ class JointsPublisher(Node):
         )
     
     def pubnext(self):
-        
+        #TODO - finish 
+        # code description  ish to help my mentaly deprived self or whoever tries to help
+
+        # Check that moveset is finished (using n)
+            # And if moveset is finished ,check if moveset has changed sence last tick
+                #if moveset has changed ,reset n 
+                # otherwise do nun
+
+        # If moveset isnt finished
+            # Publish the n th move (if size of array is 6 then its a move ,otherwise its a gripper command)
+            # Raise n by one 
 
 
 def main():

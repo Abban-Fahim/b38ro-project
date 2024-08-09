@@ -155,6 +155,7 @@ class Game(Node):
         print(msg.data)
 
     def move_to_position(self, tar, tots):
+        # TODO - modify move_to_position and make_move to publish a single Int64Array containing the whole sequence of moves 
         self.newMsg = Pose()
         self.newMsg.position.x = tar[0]
         self.newMsg.position.y = tar[1]
