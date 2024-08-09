@@ -19,7 +19,7 @@ class Game(Node):
 
         self.position_topic = self.create_publisher(Pose, "/cart_pose", 10)
         self.gripper_topic = self.create_publisher(Float32, "/gripper_pose", 10)
-        
+        self.moveset = self.create_publisher(Int32MultiArray,"/moveset",10)
         self.gripper_value = Float32()
         self.fee = 1
         self.board_state_pub = self.create_publisher(
@@ -46,6 +46,9 @@ class Game(Node):
 
         # var to store current position for split movement
         self.cur_pos = [0, 0, 0]
+        #initalise poser message
+        self.temp = Int32MultiArray()
+        self,temm = []
 
         # define resting pose
         self.retract = Pose()
@@ -160,7 +163,7 @@ class Game(Node):
         self.newMsg.orientation.x = math.pi
         self.newMsg.orientation.y = 0.0
         self.newMsg.orientation.z = math.pi / 2
-
+        self.temm.append([tar[0],tar[1],tar[2],math.py,0.0,math.py/2])
         self.cur_pos = tar
 
         # while self.fee == 0:
@@ -180,6 +183,7 @@ class Game(Node):
 
     def make_move(self, msg):
 
+        self.temp =[]
 
         # First - pickup block
         pp = [
@@ -196,7 +200,7 @@ class Game(Node):
         self.move_to_position(
             [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 10
         )
-
+        
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
         self.move_to_position_split(
