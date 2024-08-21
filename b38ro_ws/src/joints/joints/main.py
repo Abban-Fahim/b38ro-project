@@ -48,7 +48,7 @@ class Game(Node):
         self.cur_pos = [0, 0, 0]
         #initalise poser message
         self.temp = Int32MultiArray()
-        self,temm = []
+        self.temm = []
 
         # define resting pose
         self.retract = Pose()
@@ -164,11 +164,11 @@ class Game(Node):
         self.newMsg.orientation.x = math.pi
         self.newMsg.orientation.y = 0.0
         self.newMsg.orientation.z = math.pi / 2
-        self.temm.append([tar[0],tar[1],tar[2],math.py,0.0,math.py/2])
+        self.temm.append([tar[0],tar[1],tar[2],math.pi,0.0,math.pi/2])
         self.cur_pos = tar
 
-        # while self.fee == 0:
-        #     time.sleep(1)
+        while self.fee == 0:
+            rclpy.sleep(1)
 
         time.sleep(tots)
 

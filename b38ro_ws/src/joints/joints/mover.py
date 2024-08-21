@@ -48,6 +48,11 @@ class JointsPublisher(Node):
             # Publish the n th move (if size of array is 6 then its a move ,otherwise its a gripper command)
             # Raise n by one 
 
+        if self.n < self.moveset.len() :
+            #publish move 
+            #increment counter 
+        else :
+            
 
 def main():
     rclpy.init()
