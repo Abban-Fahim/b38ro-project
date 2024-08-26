@@ -167,9 +167,6 @@ class Game(Node):
         self.temm.append([tar[0],tar[1],tar[2],math.pi,0.0,math.pi/2])
         self.cur_pos = tar
 
-        while self.fee == 0:
-            rclpy.sleep(1)
-
         time.sleep(tots)
 
         self.position_topic.publish(self.newMsg)
@@ -199,44 +196,46 @@ class Game(Node):
 
         # move above the block
         self.move_to_position(
-            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 10
+            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 0.01
         )
-        
+        hehe = input("")
         # move down with gripper closed
         self.gripper_topic.publish(self.gripper_open)
         self.move_to_position_split(
-            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.22], 7, 5
+            [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.22], 7, 3
         )
-
+        hehe = input("")
         # close gripper
         self.gripper_topic.publish(self.gripper_closed)
         # move up
+        hehe = input("")
         self.move_to_position_split(
             [pp[self.moves_numai][0], pp[self.moves_numai][1], 0.45], 3, 7
         )
         self.moves_numai = self.moves_numai + 1
-
-
+        
+        hehe = input("")        
         # move to mid posiion
         self.move_to_position(
-            [self.board_positions[4][0], self.board_positions[4][1], 0.5], 7
+            [self.board_positions[4][0], self.board_positions[4][1], 0.5], 0.01
         )
-
+        hehe = input("")
         # move above dropping point
-        self.move_to_position([msg[0], msg[1], 0.45], 5)
-
+        self.move_to_position([msg[0], msg[1], 0.45], 0.01)
+        hehe = input("")
         # move down a bit
         self.move_to_position_split([msg[0], msg[1], 0.23], 5, 5)
-
+        hehe = input("")
         # open gripper
         self.gripper_topic.publish(self.gripper_open)
         time.sleep(2)
-
+        hehe = input("")
         # move up
         self.move_to_position_split([msg[0], msg[1], 0.45], 5, 5)
-
+        hehe = input("")
         # move to rest
         self.position_topic.publish(self.retract)
+        hehe = input("")
 
     def rob_celeb(self):
         # idk have the robot do something when it wins ?
